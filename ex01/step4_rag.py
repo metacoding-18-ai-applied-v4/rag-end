@@ -17,6 +17,7 @@ docs = [
 # 2. VectorDB 생성
 console.print("문서를 학습(임베딩) 중입니다...")
 try:
+    # TODO: OllamaEmbeddings(nomic-embed-text)로 임베딩 생성 → Chroma.from_documents로 벡터DB 저장
     embeddings = OllamaEmbeddings(model="nomic-embed-text")
     vectorstore = Chroma.from_documents(
         documents=docs,
@@ -24,6 +25,7 @@ try:
     )
 
     # 3. 검색기(Retriever) 설정
+    # TODO: vectorstore.as_retriever로 검색기 생성 (search_kwargs={"k": 3})
     retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
 
     # 4. 프롬프트 템플릿
@@ -40,6 +42,7 @@ try:
     )
 
     # 5. RAG 체인 연결
+    # TODO: ChatOllama(deepseek-r1:8b) → RetrievalQA.from_chain_type으로 체인 조립 (retriever, return_source_documents=True, prompt 연결)
     llm = ChatOllama(model="deepseek-r1:8b", temperature=0)
     qa_chain = RetrievalQA.from_chain_type(
         llm=llm,
@@ -53,6 +56,7 @@ try:
     console.print(f"\n질문: {question}")
     console.print("-" * 30)
 
+    # TODO: qa_chain.invoke로 질문 실행 → 검색된 문서(근거) 출력 → AI 답변 출력
     result = qa_chain.invoke({"query": question})
 
     console.print("\n--- 검색된 문서(근거) ---")

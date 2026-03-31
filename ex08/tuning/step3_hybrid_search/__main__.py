@@ -14,6 +14,8 @@ from .experiments import run_hybrid_search_experiment
 
 def main(argv: list[str] | None = None) -> None:
     """CLI 메인 함수."""
+    # TODO: ArgumentParser를 생성하고 --max-queries (int, default=None) 인자를 추가합니다.
+    #       args를 파싱한 뒤 run_hybrid_search_experiment(max_queries=args.max_queries)를 호출합니다.
     parser = argparse.ArgumentParser(
         description="ex08 step3 — 하이브리드 검색 실험",
     )

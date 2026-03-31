@@ -14,6 +14,8 @@ class WindowMemory:
 
     def get_history(self):
         """최근 N턴의 대화를 텍스트로 반환한다."""
+        # TODO: self._turns의 (question, answer) 쌍을 순회하며
+        #       "human_prefix: question\nai_prefix: answer" 형식으로 조합
         lines = []
         for question, answer in self._turns:
             lines.append(f"{self.human_prefix}: {question}")
@@ -22,8 +24,10 @@ class WindowMemory:
 
     def save_turn(self, question, answer):
         """사용자 질문과 AI 답변 1턴을 저장한다."""
+        # TODO: (question, answer) 튜플을 self._turns에 추가
         self._turns.append((question, answer))
 
     def clear(self):
         """히스토리를 초기화한다."""
+        # TODO: self._turns 초기화
         self._turns.clear()

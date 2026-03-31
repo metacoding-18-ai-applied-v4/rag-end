@@ -20,10 +20,12 @@ docs_bad = [Document(page_content=context_all, metadata={"source": "전체규정
 # 2. VectorDB 생성
 console.print("문서를 학습(임베딩) 중입니다... (청킹 미적용)")
 try:
+    # TODO: OllamaEmbeddings(nomic-embed-text)로 임베딩 생성 → Chroma.from_documents로 벡터DB 저장 (docs_bad 사용)
     embeddings = OllamaEmbeddings(model="nomic-embed-text")
     vectorstore = Chroma.from_documents(documents=docs_bad, embedding=embeddings)
 
     # 3. 검색기 및 프롬프트 설정 (통째로 하나뿐이므로 k=1로 검색해도 전체가 다 나옴)
+    # TODO: vectorstore.as_retriever로 검색기 생성 (search_kwargs={"k": 1})
     retriever = vectorstore.as_retriever(search_kwargs={"k": 1})
 
     template = """당신은 회사의 규정에 대해 설명해주는 AI 비서입니다.
@@ -36,6 +38,7 @@ try:
     PROMPT = PromptTemplate(template=template, input_variables=["context", "question"])
 
     # 4. RAG 체인 실행
+    # TODO: ChatOllama(deepseek-r1:8b) → RetrievalQA.from_chain_type으로 체인 조립 (retriever, prompt, return_source_documents=True)
     llm = ChatOllama(model="deepseek-r1:8b", temperature=0)
     qa_chain = RetrievalQA.from_chain_type(
         llm=llm,
@@ -48,6 +51,7 @@ try:
     console.print(f"\n질문: {question}")
     console.print("-" * 30)
 
+    # TODO: qa_chain.invoke로 질문 실행 → 답변 출력
     result = qa_chain.invoke({"query": question})
     console.print(f"\nAI 답변:\n{result['result']}")
 

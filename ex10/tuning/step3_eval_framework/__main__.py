@@ -27,6 +27,11 @@ def run_step_2_1(k: int) -> dict | None:
 
     console.print("[bold]Step 2-1: Precision@K & Recall@K[/bold]")
 
+    # TODO: run_evaluation(k=k) 실행
+    # TODO: 에러 시 에러 메시지 출력 후 None 반환
+    # TODO: summary에서 precision, recall 출력
+    # TODO: show_question_details로 상세 결과 출력
+    # TODO: result 반환
     result = run_evaluation(k=k)
     if "error" in result:
         console.print(f"[red]{result['error']}[/red]")
@@ -47,6 +52,10 @@ def run_step_2_2(k: int) -> dict | None:
 
     console.print("[bold]Step 2-2: Hallucination Rate[/bold]")
 
+    # TODO: run_evaluation(k=k) 실행
+    # TODO: hallucination_rate 출력
+    # TODO: 비율에 따라 상태 메시지 출력 (<0.1 녹색, <0.3 노랑, 그 외 빨강)
+    # TODO: result 반환
     result = run_evaluation(k=k)
     if "error" in result:
         console.print(f"[red]{result['error']}[/red]")
@@ -72,6 +81,10 @@ def run_step_2_3(k: int) -> dict | None:
 
     console.print("[bold]Step 2-3: Mean Reciprocal Rank (MRR)[/bold]")
 
+    # TODO: run_evaluation(k=k) 실행
+    # TODO: MRR 값 출력
+    # TODO: MRR에 따라 상태 메시지 출력 (>0.8 녹색, >0.5 노랑, 그 외 빨강)
+    # TODO: result 반환
     result = run_evaluation(k=k)
     if "error" in result:
         console.print(f"[red]{result['error']}[/red]")
@@ -97,6 +110,9 @@ def run_compare() -> None:
 
     console.print("[bold]K 값별 성능 비교[/bold]")
 
+    # TODO: K = [1, 3, 5, 10] 각각에 대해 run_evaluation 실행
+    # TODO: 에러 없는 결과만 수집
+    # TODO: show_comparison으로 비교 테이블 출력
     results = []
     for k_val in [1, 3, 5, 10]:
         console.print(f"  K={k_val} 평가 중...")
@@ -124,6 +140,12 @@ def main() -> None:
 
     console.print("[bold]ex10 Step 3: RAG 평가 프레임워크[/bold]")
 
+    # TODO: --step에 따라 해당 함수 실행
+    #   "2-1" → run_step_2_1
+    #   "2-2" → run_step_2_2
+    #   "2-3" → run_step_2_3
+    #   "compare" → run_compare
+    #   "all" → run_evaluation 후 show_summary + show_category_stats + show_question_details + run_compare
     if args.step == "2-1":
         run_step_2_1(args.k)
     elif args.step == "2-2":

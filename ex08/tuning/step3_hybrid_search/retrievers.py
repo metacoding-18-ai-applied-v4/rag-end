@@ -19,6 +19,9 @@ class BM25Retriever:
 
     def _build_index(self, documents: list[str]):
         """BM25 인덱스를 빌드합니다."""
+        # TODO: rank_bm25.BM25Okapi를 import합니다.
+        #       각 문서를 소문자 변환 + split()으로 토큰화하여 BM25Okapi 인덱스를 생성합니다.
+        #       ImportError 시 에러 메시지 출력 후 sys.exit(1)
         try:
             from rank_bm25 import BM25Okapi
 
@@ -32,6 +35,9 @@ class BM25Retriever:
 
     def search(self, query: str, top_k: int = 5) -> list[dict]:
         """BM25 로 문서를 검색합니다."""
+        # TODO: 쿼리를 토큰화하여 self.bm25.get_scores()로 점수를 계산합니다.
+        #       점수 내림차순으로 상위 top_k개를 선택합니다.
+        #       반환 형식: [{"content", "score", "metadata", "retriever_type": "bm25"}, ...]
         tokenized_query = query.lower().split()
         scores = self.bm25.get_scores(tokenized_query)
 
@@ -69,6 +75,8 @@ class VectorRetriever:
 
     def _load_model(self, model_name: str):
         """임베딩 모델을 로드합니다."""
+        # TODO: sentence_transformers.SentenceTransformer를 import하여 모델을 로드합니다.
+        #       ImportError 시 에러 메시지 출력 후 sys.exit(1)
         try:
             from sentence_transformers import SentenceTransformer
 
@@ -86,6 +94,7 @@ class VectorRetriever:
 
     def _embed_documents(self, documents: list[str]):
         """문서 임베딩을 사전 계산합니다."""
+        # TODO: self.model.encode(documents, convert_to_numpy=True)로 임베딩을 생성합니다.
         console.print("[dim]문서 임베딩 생성 중...[/dim]")
         embeddings = self.model.encode(documents, convert_to_numpy=True)
         console.print(f"[green]임베딩 생성 완료:[/green] {len(documents)}개 문서")
@@ -93,6 +102,9 @@ class VectorRetriever:
 
     def search(self, query: str, top_k: int = 5) -> list[dict]:
         """코사인 유사도 기반 검색을 수행합니다."""
+        # TODO: 쿼리를 임베딩하고 self.embeddings와의 코사인 유사도를 계산합니다.
+        #       상위 top_k개를 선택합니다.
+        #       반환 형식: [{"content", "score", "metadata", "retriever_type": "vector"}, ...]
         import numpy as np
 
         query_embedding = self.model.encode([query], convert_to_numpy=True)[0]
@@ -136,6 +148,9 @@ class EnsembleRetriever:
     @staticmethod
     def _normalize_scores(results: list[dict]) -> list[dict]:
         """검색 점수를 0~1 범위로 정규화합니다."""
+        # TODO: results가 비어있으면 그대로 반환합니다.
+        #       min/max 점수를 구해 (score - min) / (max - min)으로 정규화합니다.
+        #       score_range가 0이면 모든 normalized_score를 1.0으로 설정합니다.
         if not results:
             return results
 
@@ -151,6 +166,10 @@ class EnsembleRetriever:
 
     def search(self, query: str, top_k: int = 5, fetch_k: int = 10) -> list[dict]:
         """하이브리드 검색을 수행합니다."""
+        # TODO: BM25와 Vector 각각 fetch_k개씩 검색 후 정규화합니다.
+        #       문서 content를 키로 하여 bm25_score와 vector_score를 합칩니다.
+        #       hybrid_score = alpha * vector_score + (1 - alpha) * bm25_score
+        #       hybrid_score 내림차순 정렬 후 상위 top_k개를 반환합니다.
         bm25_results = self._normalize_scores(
             self.bm25_retriever.search(query, top_k=fetch_k)
         )

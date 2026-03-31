@@ -69,7 +69,7 @@ class ConnectHRAgent:
     def _build_agent_executor(self):
         """AgentExecutor를 구성합니다."""
         try:
-            # ① 프롬프트 템플릿 정의
+            # TODO: 프롬프트 템플릿을 정의한다 (system + chat_history + input + agent_scratchpad)
             prompt = ChatPromptTemplate.from_messages([
                 ("system", SYSTEM_PROMPT),
                 MessagesPlaceholder(variable_name="chat_history", optional=True),
@@ -77,10 +77,10 @@ class ConnectHRAgent:
                 MessagesPlaceholder(variable_name="agent_scratchpad"),
             ])
 
-            # ② Tool Calling Agent 생성
+            # TODO: Tool Calling Agent를 생성한다
             agent = create_tool_calling_agent(self.llm, self.tools, prompt)
 
-            # ③ AgentExecutor 래핑 (운영 설정 포함)
+            # TODO: AgentExecutor를 래핑한다 (운영 설정: max_iterations, timeout, 중간 단계 반환 포함)
             executor = AgentExecutor(
                 agent=agent,
                 tools=self.tools,
@@ -100,6 +100,10 @@ class ConnectHRAgent:
 
     def _run_with_retry(self, query, chat_history=None):
         """재시도 로직이 포함된 Agent 실행 메서드."""
+        # TODO: RETRY_MAX_ATTEMPTS만큼 반복하며 agent_executor.invoke()를 시도한다
+        # TODO: 성공하면 결과를 반환한다
+        # TODO: 실패하면 RETRY_DELAY_SECONDS만큼 대기 후 재시도한다
+        # TODO: 모든 재시도 실패 시 에러 메시지 딕셔너리를 반환한다
         last_error = None
 
         for attempt in range(1, RETRY_MAX_ATTEMPTS + 1):
@@ -127,7 +131,7 @@ class ConnectHRAgent:
 
         logger.info("[ConnectHRAgent] 질문 수신: %s", query[:80])
 
-        # ① 캐시 조회
+        # TODO: ① 캐시 조회 — use_cache가 True이면 response_cache.get()으로 캐시된 응답을 확인한다
         if use_cache:
             cached = response_cache.get(query)
             if cached is not None:
@@ -135,10 +139,13 @@ class ConnectHRAgent:
                 logger.info("[ConnectHRAgent] 캐시 응답 반환")
                 return cached
 
-        # ② Router로 경로 결정 (3단계 QueryRouter 사용)
+        # TODO: ② Router로 경로 결정 — classify_route()로 "rag" 또는 "agent" 경로를 결정한다
         route = classify_route(query, router=self._router)
 
-        # ③ 경로별 실행
+        # TODO: ③ 경로별 실행
+        #   - "rag" 경로이고 rag_chain이 있으면 → rag_chain.invoke()로 문서 검색 응답 생성
+        #   - RAG 실패 시 → _run_with_retry()로 Agent 폴백
+        #   - 그 외 → _run_with_retry()로 Agent 실행
         if route == "rag" and self.rag_chain is not None:
             # 비정형 문서 검색 경로
             try:
@@ -167,7 +174,7 @@ class ConnectHRAgent:
                 "from_cache": False,
             }
 
-        # ④ 토큰 사용량 기록 (Ollama는 토큰 수를 반환하지 않으므로 추정)
+        # TODO: ④ 토큰 사용량 기록 — token_tracker.record()로 모델, 토큰 수, 지연시간 기록
         latency_ms = (time.time() - start_time) * 1000
         provider = os.getenv("LLM_PROVIDER", "ollama").lower()
         if provider == "openai":
@@ -182,7 +189,7 @@ class ConnectHRAgent:
             latency_ms=latency_ms,
         )
 
-        # ⑤ Langfuse 추적 전송
+        # TODO: ⑤ Langfuse 추적 전송 — langfuse_monitor.trace()로 입출력 및 메타데이터 전송
         langfuse_monitor.trace(
             name="agent_run",
             input_data=query,
@@ -190,10 +197,11 @@ class ConnectHRAgent:
             metadata={"route": result["route"], "latency_ms": latency_ms},
         )
 
-        # ⑥ 캐시 저장
+        # TODO: ⑥ 캐시 저장 — use_cache가 True이면 response_cache.set()으로 응답 캐시
         if use_cache:
             response_cache.set(query, result)
 
+        # TODO: 처리 완료 로그 출력 후 result를 반환한다
         logger.info(
             "[ConnectHRAgent] 처리 완료 (경로: %s, 소요: %.0fms)",
             result["route"],

@@ -18,6 +18,10 @@ class JsonFormatter(logging.Formatter):
 
     def format(self, record):
         """LogRecord를 JSON 문자열로 변환합니다."""
+        # TODO: timestamp, level, logger, message를 포함한 딕셔너리를 구성한다
+        # TODO: fmt_keys에 해당하는 추가 필드를 포함한다
+        # TODO: exc_info가 있으면 exception 필드를 추가한다
+        # TODO: json.dumps()로 직렬화하여 반환한다
         log_obj = {
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "level": record.levelname,
@@ -39,6 +43,11 @@ class JsonFormatter(logging.Formatter):
 
 def setup_logging(level="INFO", use_json=True, log_file=None):
     """애플리케이션 로깅 시스템을 설정합니다."""
+    # TODO: 문자열 레벨을 숫자로 변환한다 (유효하지 않으면 ValueError)
+    # TODO: 루트 로거 레벨을 설정하고 기존 핸들러를 제거한다
+    # TODO: use_json이 True이면 JsonFormatter, 아니면 일반 Formatter를 사용한다
+    # TODO: 콘솔 핸들러를 추가한다
+    # TODO: log_file이 지정되면 파일 핸들러도 추가한다
     numeric_level = getattr(logging, level.upper(), None)
     if not isinstance(numeric_level, int):
         raise ValueError(f"유효하지 않은 로그 레벨입니다: '{level}'. INFO, DEBUG, WARNING, ERROR 중 하나를 사용하십시오.")
@@ -99,6 +108,10 @@ class TokenTracker:
 
     def record(self, model, input_tokens, output_tokens, operation="chat", latency_ms=0.0):
         """토큰 사용량을 기록합니다."""
+        # TODO: COST_PER_1K_TOKENS에서 모델별 비용 테이블을 가져온다
+        # TODO: input/output 토큰 기반으로 비용(USD)을 계산한다
+        # TODO: timestamp, model, operation, 토큰 수, 비용, latency를 레코드로 저장한다
+        # TODO: 누적 토큰 수를 업데이트한다
         cost_table = self.COST_PER_1K_TOKENS.get(model, {"input": 0.0, "output": 0.0})
         cost_usd = (
             (input_tokens / 1000 * cost_table["input"])
@@ -127,6 +140,7 @@ class TokenTracker:
 
     def summary(self):
         """누적 토큰 사용량 요약을 반환합니다."""
+        # TODO: total_calls, total_input/output_tokens, total_cost_usd, avg_latency_ms를 딕셔너리로 반환한다
         total_cost = sum(r["cost_usd"] for r in self._records)
         avg_latency = (
             sum(r["latency_ms"] for r in self._records) / len(self._records)
@@ -144,6 +158,7 @@ class TokenTracker:
 
     def recent(self, n=5):
         """최근 n개의 호출 기록을 반환합니다."""
+        # TODO: _records에서 마지막 n개를 반환한다
         return self._records[-n:]
 
 
@@ -160,6 +175,10 @@ class LangfuseMonitor:
 
     def _init_langfuse(self):
         """Langfuse 클라이언트를 초기화합니다."""
+        # TODO: 환경변수에서 LANGFUSE_PUBLIC_KEY와 LANGFUSE_SECRET_KEY를 읽는다
+        # TODO: 키가 없으면 안내 메시지 로깅 후 리턴한다
+        # TODO: Langfuse 클라이언트를 생성하고 enabled를 True로 설정한다
+        # TODO: langfuse 패키지 미설치 시 ImportError를 처리한다
         public_key = os.getenv("LANGFUSE_PUBLIC_KEY", "")
         secret_key = os.getenv("LANGFUSE_SECRET_KEY", "")
 
@@ -188,6 +207,9 @@ class LangfuseMonitor:
 
     def trace(self, name, input_data, output_data, metadata=None):
         """LLM 호출 추적 기록을 Langfuse에 전송합니다."""
+        # TODO: enabled가 False이면 리턴한다
+        # TODO: _client.trace()로 name, input, output, metadata를 전송한다
+        # TODO: 실패 시 경고 로그를 남긴다
         if not self.enabled or self._client is None:
             return
 
@@ -204,6 +226,8 @@ class LangfuseMonitor:
 
     def flush(self):
         """대기 중인 Langfuse 이벤트를 즉시 전송합니다."""
+        # TODO: enabled가 False이면 리턴한다
+        # TODO: _client.flush()를 호출한다
         if not self.enabled or self._client is None:
             return
         try:

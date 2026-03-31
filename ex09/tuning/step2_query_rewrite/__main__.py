@@ -42,6 +42,11 @@ def main() -> None:
     parser.add_argument("--num_queries", type=int, default=3, help="Multi-Query 생성 수 (기본: 3)")
     args = parser.parse_args()
 
+    # TODO: --step 미지정 시 run_all() 호출
+    # TODO: --step 지정 시 해당 실험만 실행
+    #   2-1: run_abbreviation_experiment (queries 리스트 전달)
+    #   2-2: run_hyde_experiment (임베딩 로드 필요)
+    #   2-3: run_multi_query_experiment (임베딩 로드 필요, num_queries 전달)
     if args.step is None:
         run_all(query=args.query, num_queries=args.num_queries)
         return

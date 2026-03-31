@@ -33,6 +33,13 @@ STEP_DESCRIPTIONS = {
 
 def build_parser() -> argparse.ArgumentParser:
     """argparse 파서를 생성합니다."""
+    # TODO: ArgumentParser를 생성하고 --step, --percentile, --k, --threshold,
+    #       --department 인자를 추가하여 반환합니다.
+    #       - --step: choices=STEP_CHOICES, required=True
+    #       - --percentile: int, default=70
+    #       - --k: int, default=5
+    #       - --threshold: float, default=0.2
+    #       - --department: str, default=None
     parser = argparse.ArgumentParser(
         description="ex08 step1 — 청킹 전략 및 Retriever 파라미터 실험",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -75,6 +82,14 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> None:
     """CLI 메인 함수."""
+    # TODO: build_parser()로 파서 생성 → args 파싱
+    #       → args.step 값에 따라 dispatch 딕셔너리에서 적절한 실험 함수를 호출합니다.
+    #       dispatch 매핑:
+    #         "1-1" → run_chunk_size_experiment(percentile=args.percentile)
+    #         "1-2" → run_overlap_experiment()
+    #         "1-3" → run_strategy_comparison(percentile=args.percentile)
+    #         "1-4" → run_short_doc_experiment(percentile=args.percentile)
+    #         "1-5" → run_retriever_experiment(k, threshold, department)
     parser = build_parser()
     args = parser.parse_args(argv)
 

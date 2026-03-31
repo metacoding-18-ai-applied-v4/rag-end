@@ -16,6 +16,10 @@ def fixed_size_chunking(text: str, chunk_size: int = 500, overlap: int = 100) ->
     Returns:
         분할된 청크 리스트.
     """
+    # TODO: start=0부터 시작하여 text를 chunk_size 단위로 잘라 리스트에 추가합니다.
+    #       - 각 청크는 text[start:end]이며, 공백만 있는 청크는 건너뜁니다.
+    #       - 다음 시작 위치는 end - overlap 입니다.
+    #       - 텍스트 끝에 도달하면 루프를 종료합니다.
     chunks = []
     start = 0
     text_length = len(text)
@@ -51,6 +55,9 @@ def recursive_character_chunking(
     Returns:
         분할된 청크 리스트.
     """
+    # TODO: langchain_text_splitters.RecursiveCharacterTextSplitter를 import합니다.
+    #       - separators: ["\n\n", "\n", "。", ".", " ", ""]
+    #       - ImportError 시 fixed_size_chunking으로 폴백합니다.
     try:
         from langchain_text_splitters import RecursiveCharacterTextSplitter
 
@@ -87,6 +94,10 @@ def semantic_chunking(
     Returns:
         분할된 청크 리스트.
     """
+    # TODO: HuggingFaceEmbeddings + SemanticChunker를 사용하여 시맨틱 청킹합니다.
+    #       - breakpoint_threshold_type="percentile"
+    #       - breakpoint_threshold_amount=percentile
+    #       - ImportError 시 recursive_character_chunking으로 폴백합니다.
     try:
         from langchain_community.embeddings import HuggingFaceEmbeddings
         from langchain_experimental.text_splitter import SemanticChunker

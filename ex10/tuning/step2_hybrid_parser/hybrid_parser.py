@@ -37,6 +37,12 @@ def process_image_hybrid(
     vision_model: str | None = None,
 ) -> dict:
     """OCR 텍스트가 임계값 이상이면 OCR 결과를, 아니면 Vision LLM으로 전환한다."""
+    # TODO: threshold 기본값 설정 (MIN_TEXT_LENGTH)
+    # TODO: _ocr_page로 OCR 수행
+    # TODO: OCR 텍스트 길이가 threshold 이상이면 OCR 결과 반환
+    #   {"strategy": "ocr", "text": ..., "char_count": ...}
+    # TODO: 미만이면 _vision_page로 Vision LLM 전환
+    #   {"strategy": "vision", "text": ..., "char_count": ...}
     threshold = threshold or MIN_TEXT_LENGTH
 
     ocr_text = _ocr_page(page, dpi=dpi)
@@ -63,6 +69,11 @@ def process_image_textlayer(
     vision_model: str | None = None,
 ) -> dict:
     """PDF 텍스트 레이어가 있으면 사용, 없으면 Vision LLM으로 전환한다."""
+    # TODO: page.get_text()로 텍스트 레이어 추출
+    # TODO: 텍스트가 있으면 text_layer 전략으로 반환
+    #   {"strategy": "text_layer", "text": ..., "char_count": ...}
+    # TODO: 없으면 _vision_page로 Vision LLM 전환
+    #   {"strategy": "vision", "text": ..., "char_count": ...}
     text_layer = page.get_text().strip()
 
     if text_layer:
@@ -88,6 +99,9 @@ def _ocr_page(page: fitz.Page, dpi: int = 150) -> str:
     """페이지를 이미지로 렌더링한 뒤 EasyOCR로 텍스트를 추출한다."""
     import easyocr
 
+    # TODO: EasyOCR Reader 생성 (한국어+영어, GPU 비활성)
+    # TODO: 페이지를 pixmap으로 렌더링 → PIL Image → numpy array
+    # TODO: reader.readtext로 OCR 수행 후 텍스트 결합 반환
     reader = easyocr.Reader(["ko", "en"], gpu=False)
     pix = page.get_pixmap(dpi=dpi)
     img = Image.open(io.BytesIO(pix.tobytes("png")))
@@ -102,6 +116,8 @@ def _vision_page(
     model: str | None = None,
 ) -> str:
     """페이지를 이미지로 렌더링한 뒤 Vision LLM에 전달한다."""
+    # TODO: 페이지를 pixmap으로 렌더링 → PNG bytes → base64 인코딩
+    # TODO: VISION_PROVIDER에 따라 Ollama 또는 OpenAI 호출
     pix = page.get_pixmap(dpi=dpi)
     img_bytes = pix.tobytes("png")
     img_b64 = base64.b64encode(img_bytes).decode("utf-8")
@@ -113,6 +129,10 @@ def _vision_page(
 
 def _call_ollama_vision(img_b64: str, model: str | None = None) -> str:
     """Ollama Vision API를 호출한다."""
+    # TODO: OLLAMA_BASE_URL/api/generate 엔드포인트에 POST
+    # TODO: model, prompt(문서 분석 지시), images 전달
+    # TODO: 응답에서 response 텍스트 추출
+    # TODO: 실패 시 에러 메시지 문자열 반환
     try:
         resp = httpx.post(
             f"{OLLAMA_BASE_URL}/api/generate",
@@ -136,6 +156,10 @@ def _call_ollama_vision(img_b64: str, model: str | None = None) -> str:
 
 def _call_openai_vision(img_b64: str) -> str:
     """OpenAI Vision API를 fallback으로 호출한다."""
+    # TODO: OpenAI Chat Completions API에 POST
+    # TODO: text + image_url(base64) 멀티모달 메시지 전달
+    # TODO: 응답에서 content 텍스트 추출
+    # TODO: 실패 시 에러 메시지 문자열 반환
     try:
         resp = httpx.post(
             "https://api.openai.com/v1/chat/completions",

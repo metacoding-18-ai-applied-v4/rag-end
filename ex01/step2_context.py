@@ -2,6 +2,7 @@ from langchain_ollama import ChatOllama
 from rich.console import Console
 
 console = Console()
+# TODO: ChatOllama로 deepseek-r1:8b 모델 연결 (temperature=0)
 llm = ChatOllama(model="deepseek-r1:8b", temperature=0)
 
 # 1. 정보를 변수에 담습니다 (아직 DB 안 씀)
@@ -15,6 +16,7 @@ context_data = """
 question = "우리 회사(커넥트)의 신입사원 연차 발생 규정이 어떻게 돼?"
 
 # 2. 프롬프트에 정보를 포함시킵니다.
+# TODO: f-string으로 context_data와 question을 포함한 프롬프트 작성 → llm.invoke로 답변 받기 → 출력
 prompt = f"""
 아래 [참고 정보]를 보고 질문에 답해줘.
 [참고 정보]

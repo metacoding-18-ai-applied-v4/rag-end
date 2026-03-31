@@ -36,6 +36,8 @@ RAG_HUMAN_PROMPT = "질문: {question}"
 
 def _format_docs(docs):
     """검색된 Document 목록을 프롬프트에 삽입할 텍스트 형식으로 변환한다."""
+    # TODO: 각 Document에서 source, page 메타데이터와 page_content를 꺼내어
+    #       "[문서 N] 출처: source (p.page)\n내용" 형식의 텍스트로 조합
     parts = []
     for i, doc in enumerate(docs, start=1):
         source = doc.metadata.get("source", "알 수 없음")
@@ -46,9 +48,12 @@ def _format_docs(docs):
 
 def build_rag_chain():
     """LCEL 파이프 연산자(|)로 RAG 체인과 Retriever를 조립하여 반환한다."""
+    # TODO: build_llm()으로 LLM 생성
     llm = build_llm()                # ① LLM 인스턴스 생성
+    # TODO: build_retriever()로 Retriever 생성
     retriever = build_retriever()    # ② Retriever 생성 (ChromaDB)
 
+    # TODO: ChatPromptTemplate 구성 (RAG_SYSTEM_PROMPT + RAG_HUMAN_PROMPT)
     prompt = ChatPromptTemplate.from_messages(
         [
             ("system", RAG_SYSTEM_PROMPT),
@@ -56,6 +61,11 @@ def build_rag_chain():
         ]
     )
 
+    # TODO: LCEL 파이프로 체인 조립
+    #   - "context": question → retriever → _format_docs
+    #   - "history": itemgetter("history")
+    #   - "question": itemgetter("question")
+    #   → prompt → llm → StrOutputParser()
     # LCEL 파이프: 입력 dict에서 각 키를 꺼내 병렬 처리 후 프롬프트로 합침
     chain = (
         {
@@ -68,6 +78,7 @@ def build_rag_chain():
         | StrOutputParser()
     )
 
+    # TODO: (chain, retriever) 튜플 반환
     return chain, retriever
 
 
@@ -78,6 +89,7 @@ _retriever_cache = None
 
 def get_rag_chain():
     """RAG 체인과 Retriever 싱글턴 인스턴스를 반환한다."""
+    # TODO: 캐시가 비어 있으면 build_rag_chain()으로 초기화 후 반환
     global _rag_chain_cache, _retriever_cache
     if _rag_chain_cache is None:
         _rag_chain_cache, _retriever_cache = build_rag_chain()

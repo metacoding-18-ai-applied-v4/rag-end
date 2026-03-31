@@ -40,6 +40,7 @@ DEFAULT_MARKDOWN_DIR = str(BASE_DIR / "data" / "markdown")
 
 def _rel_path(path_str: str) -> str:
     """절대 경로를 프로젝트 기준 상대 경로로 변환합니다."""
+    # TODO: Path.relative_to()로 BASE_DIR 기준 상대 경로 반환, 실패 시 원본 반환
     try:
         return str(Path(path_str).relative_to(BASE_DIR))
     except ValueError:
@@ -65,6 +66,9 @@ def save_results_as_markdown(
         results: extractor.extract_all_from_directory() 반환값
         markdown_dir: 마크다운 파일 저장 디렉토리
     """
+    # TODO: markdown_dir 디렉토리 생성 후, results 각 항목을 .md 파일로 저장
+    # - 파일 헤더(파일명, 형식, 글자 수) + 본문 텍스트 구성
+    # - 각 result의 pages에서 텍스트를 추출하여 마크다운으로 작성
     md_dir = Path(markdown_dir)
     md_dir.mkdir(parents=True, exist_ok=True)
 
@@ -111,6 +115,7 @@ def step1_python_parsing(docs_dir: str) -> list[dict]:
     print("=" * 60)
     print(f"  📁 문서 디렉토리: {_rel_path(docs_dir)}\n")
 
+    # TODO: extract_all_from_directory()로 문서 추출 → 결과 출력 → 마크다운 저장
     # === PROCESS ===
     start_time = time.time()
     results = extract_all_from_directory(docs_dir)
@@ -158,6 +163,7 @@ def step2_embed_and_store(
     print(f"  🧮 임베딩 모델: {embedding_model_name}")
     print(f"  💾 ChromaDB: {_rel_path(chroma_dir)}\n")
 
+    # TODO: chunk_all_documents()로 청킹 → store_chunks_to_chroma()로 ChromaDB 저장
     # === PROCESS: 청킹 ===
     print("  ✂️  청킹 중...")
     all_chunks = chunk_all_documents(python_results, chunk_size, overlap)
@@ -271,10 +277,13 @@ def main() -> None:
     python_results: list[dict] = []
 
     # === PROCESS: Step 1 — Python 파싱 ===
+    # TODO: 1 in steps_to_run이면 step1_python_parsing 실행
     if 1 in steps_to_run:
         python_results = step1_python_parsing(docs_dir=args.docs_dir)
 
     # === PROCESS: Step 2 — 청킹 + 임베딩 + ChromaDB 저장 ===
+    # TODO: 2 in steps_to_run이면 step2_embed_and_store 실행
+    #       (Step 1 결과가 없으면 Step 1을 먼저 자동 실행)
     if 2 in steps_to_run:
         # Step 1 결과 없이 Step 2만 실행하려면 파싱 먼저 수행
         if not python_results:
@@ -291,6 +300,7 @@ def main() -> None:
         )
 
     # === OUTPUT: 파이프라인 완료 요약 ===
+    # TODO: 총 소요 시간 출력 + 다음 단계(cli_search.py) 안내
     total_elapsed = time.time() - pipeline_start
     print("\n" + "=" * 60)
     print(f"  ✅ 파이프라인 완료! ({total_elapsed:.1f}초)")

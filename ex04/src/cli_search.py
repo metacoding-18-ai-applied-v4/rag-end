@@ -51,11 +51,13 @@ def format_distance_as_similarity(distance: float) -> float:
     Returns:
         유사도 백분율 (float, 0.0 ~ 100.0)
     """
+    # TODO: (1 - distance/2) * 100 공식으로 유사도 백분율 계산
     return max(0.0, (1.0 - distance / 2.0)) * 100
 
 
 def _similarity_bar(pct: float, width: int = 20) -> str:
     """유사도 백분율을 시각적 프로그레스 바로 변환합니다."""
+    # TODO: pct에 비례하여 '█'과 '░'로 width 길이의 바 생성
     filled = int(pct / 100 * width)
     return "█" * filled + "░" * (width - filled)
 
@@ -65,6 +67,7 @@ def _clean_text(text: str, max_len: int = 200) -> str:
 
     연속 공백과 불필요한 줄바꿈을 제거하고 최대 길이를 제한합니다.
     """
+    # TODO: 연속 공백/줄바꿈 정리 → max_len 초과 시 잘라내기
     import re
     # 연속 공백 → 단일 공백 (PDF 다단 편집 공백 문제 해결)
     cleaned = re.sub(r"[ \t]{2,}", " ", text.strip())
@@ -81,6 +84,8 @@ def print_search_result(result: dict) -> None:
     Args:
         result: store.search_chroma() 반환 리스트의 개별 원소 딕셔너리
     """
+    # TODO: result에서 rank, text, distance, metadata를 꺼내어
+    #       유사도 변환 → 순위/출처/텍스트/이미지 경로를 터미널에 출력
     rank = result["rank"]
     text = result["text"]
     distance = result["distance"]
@@ -140,6 +145,7 @@ def run_single_query(
         collection_name: ChromaDB 컬렉션명
         embedding_model_name: 임베딩 모델 HuggingFace ID
     """
+    # TODO: search_chroma()로 검색 실행 → 결과를 print_search_result()로 출력
     print(f"\n{SEPARATOR}")
     print(f"  🔍 검색 쿼리: {query}")
     print(f"  📊 상위 {top_k}개 결과를 검색합니다")
@@ -188,6 +194,8 @@ def run_interactive_mode(
         collection_name: ChromaDB 컬렉션명
         embedding_model_name: 임베딩 모델 HuggingFace ID
     """
+    # TODO: while 루프로 input() 반복 → run_single_query() 호출
+    #       'quit'/'exit'/'q' 입력 시 종료
     print(f"\n{SEPARATOR}")
     print("  🔎 사내 AI 비서 VectorDB CLI 검색 도구")
     print(f"  📁 ChromaDB: {chroma_dir}")
@@ -293,7 +301,7 @@ def main() -> None:
 
     # === PROCESS ===
     if args.query:
-        # 단일 쿼리 모드
+        # TODO: 단일 쿼리 모드 — run_single_query() 호출
         run_single_query(
             query=args.query,
             top_k=args.top_k,
@@ -302,7 +310,7 @@ def main() -> None:
             embedding_model_name=args.embedding_model,
         )
     else:
-        # 대화형 반복 검색 모드
+        # TODO: 대화형 반복 검색 모드 — run_interactive_mode() 호출
         run_interactive_mode(
             top_k=args.top_k,
             chroma_dir=args.chroma_dir,
