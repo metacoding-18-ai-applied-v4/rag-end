@@ -1,0 +1,242 @@
+[
+  {
+    "id": 1,
+    "category": "정형",
+    "question": "김철수 직원의 현재 연차 잔여일은 며칠입니까?",
+    "expected_answer": "김철수 직원의 연차 잔여일은 8일입니다.",
+    "expected_source": "직원 DB - 연차 관리 테이블",
+    "difficulty": "easy"
+  },
+  {
+    "id": 2,
+    "category": "정형",
+    "question": "2024년 3월 영업팀 매출 합계는 얼마입니까?",
+    "expected_answer": "2024년 3월 영업팀 매출 합계는 45,200,000원입니다.",
+    "expected_source": "매출 DB - sales 테이블",
+    "difficulty": "easy"
+  },
+  {
+    "id": 3,
+    "category": "정형",
+    "question": "현재 재직 중인 개발팀 직원 수는 몇 명입니까?",
+    "expected_answer": "현재 재직 중인 개발팀 직원 수는 12명입니다.",
+    "expected_source": "직원 DB - employees 테이블",
+    "difficulty": "easy"
+  },
+  {
+    "id": 4,
+    "category": "정형",
+    "question": "이영희 직원이 2024년에 사용한 휴가일 목록을 알려주십시오.",
+    "expected_answer": "이영희 직원은 2024년에 총 5일 휴가를 사용하였습니다: 1월 15일, 3월 22일, 5월 6일, 8월 12일~13일.",
+    "expected_source": "직원 DB - leaves 테이블",
+    "difficulty": "medium"
+  },
+  {
+    "id": 5,
+    "category": "정형",
+    "question": "2024년 2분기 전체 부서 매출 순위를 알려주십시오.",
+    "expected_answer": "2024년 2분기 매출 순위: 1위 영업팀(135,000,000원), 2위 마케팅팀(98,000,000원), 3위 개발팀(72,000,000원).",
+    "expected_source": "매출 DB - sales 테이블",
+    "difficulty": "hard"
+  },
+  {
+    "id": 6,
+    "category": "정형",
+    "question": "입사일 기준으로 가장 오래된 직원 3명은 누구입니까?",
+    "expected_answer": "입사일 기준 가장 오래된 직원: 1위 박민수(2015-03-02), 2위 김철수(2016-07-15), 3위 최지영(2017-01-10).",
+    "expected_source": "직원 DB - employees 테이블",
+    "difficulty": "medium"
+  },
+  {
+    "id": 7,
+    "category": "정형",
+    "question": "연차 소진율이 50% 미만인 직원 명단을 알려주십시오.",
+    "expected_answer": "연차 소진율 50% 미만 직원: 홍길동(30%), 김미래(45%), 이태양(20%).",
+    "expected_source": "직원 DB - 연차 관리 테이블",
+    "difficulty": "hard"
+  },
+  {
+    "id": 8,
+    "category": "정형",
+    "question": "2024년 1월부터 12월까지 월별 전체 매출 추이를 보여주십시오.",
+    "expected_answer": "2024년 월별 매출: 1월 38M, 2월 42M, 3월 45M, 4월 50M, 5월 48M, 6월 52M, 7월 55M, 8월 53M, 9월 58M, 10월 62M, 11월 65M, 12월 70M.",
+    "expected_source": "매출 DB - sales 테이블",
+    "difficulty": "hard"
+  },
+  {
+    "id": 9,
+    "category": "정형",
+    "question": "HR팀에서 지난 6개월 동안 채용한 신입 직원은 몇 명입니까?",
+    "expected_answer": "HR팀에서 최근 6개월 동안 채용한 신입 직원은 총 4명입니다.",
+    "expected_source": "직원 DB - employees 테이블",
+    "difficulty": "medium"
+  },
+  {
+    "id": 10,
+    "category": "정형",
+    "question": "병가를 가장 많이 사용한 직원 상위 5명은 누구입니까?",
+    "expected_answer": "병가 사용 상위 5명: 1위 강동원(12일), 2위 송혜교(9일), 3위 원빈(7일), 4위 김태희(6일), 5위 이병헌(5일).",
+    "expected_source": "직원 DB - leaves 테이블",
+    "difficulty": "hard"
+  },
+  {
+    "id": 11,
+    "category": "비정형",
+    "question": "연차 신청 절차는 어떻게 됩니까?",
+    "expected_answer": "연차 신청은 사내 HR 시스템에서 신청 후 팀장 승인을 받아야 합니다. 3일 이상의 연차는 2주 전, 당일 연차는 전날 오전까지 신청해야 합니다.",
+    "expected_source": "HR_취업규칙_v1.0.pdf, 섹션 3.2",
+    "difficulty": "easy"
+  },
+  {
+    "id": 12,
+    "category": "비정형",
+    "question": "재택근무 신청 조건과 승인 기준은 무엇입니까?",
+    "expected_answer": "재택근무는 입사 6개월 이상 정규직에 한해 신청 가능하며, 팀장 승인 후 주 2회까지 허용됩니다. 프로젝트 마감 기간에는 제한될 수 있습니다.",
+    "expected_source": "HR_근무규정_v2.1.pdf, 섹션 4.1",
+    "difficulty": "medium"
+  },
+  {
+    "id": 13,
+    "category": "비정형",
+    "question": "사내 보안 정책에서 개인 USB 사용에 대한 규정은 어떻게 됩니까?",
+    "expected_answer": "개인 USB 사용은 원칙적으로 금지되며, 업무용 USB는 IT보안팀에서 암호화된 장치만 승인하여 지급합니다. 위반 시 보안감사 대상이 됩니다.",
+    "expected_source": "IT_보안정책_v3.0.pdf, 섹션 5.3",
+    "difficulty": "medium"
+  },
+  {
+    "id": 14,
+    "category": "비정형",
+    "question": "신입사원 온보딩 프로세스는 어떻게 진행됩니까?",
+    "expected_answer": "신입사원 온보딩은 3단계로 진행됩니다: 1주차 오리엔테이션(회사 소개, 시스템 접근권한 설정), 2-4주차 부서 적응(멘토링 프로그램), 2-3개월차 업무 통합(정기 체크인).",
+    "expected_source": "HR_온보딩가이드_v1.5.pdf, 섹션 2",
+    "difficulty": "medium"
+  },
+  {
+    "id": 15,
+    "category": "비정형",
+    "question": "출장비 정산 기준과 제출 기한은 어떻게 됩니까?",
+    "expected_answer": "출장비는 출장 후 5영업일 이내에 영수증과 함께 경비 정산 시스템에 제출해야 합니다. 숙박비는 1박 150,000원, 식비는 1일 50,000원 한도입니다.",
+    "expected_source": "재무_출장규정_v2.0.pdf, 섹션 3",
+    "difficulty": "easy"
+  },
+  {
+    "id": 16,
+    "category": "비정형",
+    "question": "성과 평가는 어떤 기준으로 이루어집니까?",
+    "expected_answer": "성과 평가는 반기별로 실시하며, 목표달성도(60%), 역량평가(30%), 동료평가(10%)로 구성됩니다. 평가 결과는 S/A/B/C/D 5등급으로 분류됩니다.",
+    "expected_source": "HR_성과평가지침_v2.0.pdf, 섹션 2.1",
+    "difficulty": "medium"
+  },
+  {
+    "id": 17,
+    "category": "비정형",
+    "question": "복리후생 중 자기계발비 지원 한도는 얼마입니까?",
+    "expected_answer": "자기계발비는 연간 500,000원 한도로 지원되며, 직무 관련 도서, 온라인 강의, 자격증 취득 비용이 포함됩니다. 반드시 영수증 제출이 필요합니다.",
+    "expected_source": "HR_복리후생규정_v3.0.pdf, 섹션 6.2",
+    "difficulty": "easy"
+  },
+  {
+    "id": 18,
+    "category": "비정형",
+    "question": "사내 고충처리 절차는 어떻게 됩니까?",
+    "expected_answer": "고충처리는 1차로 직속 팀장에게 제기하고, 해결되지 않을 경우 인사팀 고충처리위원회에 서면으로 신청합니다. 신청 후 15일 이내 결과를 통보받습니다.",
+    "expected_source": "HR_취업규칙_v1.0.pdf, 섹션 9",
+    "difficulty": "hard"
+  },
+  {
+    "id": 19,
+    "category": "비정형",
+    "question": "육아휴직 사용 가능 조건과 기간은 어떻게 됩니까?",
+    "expected_answer": "육아휴직은 만 8세 이하 자녀를 둔 직원이 신청할 수 있으며, 최대 1년 사용 가능합니다. 회사는 법정 육아휴직급여 외 추가로 첫 3개월간 기본급의 20%를 지원합니다.",
+    "expected_source": "HR_복리후생규정_v3.0.pdf, 섹션 7",
+    "difficulty": "medium"
+  },
+  {
+    "id": 20,
+    "category": "비정형",
+    "question": "퇴직금 산정 기준은 무엇입니까?",
+    "expected_answer": "퇴직금은 근속 1년 이상 시 지급되며, 계속근로기간 1년에 대해 30일분의 평균임금을 지급합니다. 평균임금은 퇴직 전 3개월 임금 총액을 기준으로 산정합니다.",
+    "expected_source": "HR_취업규칙_v1.0.pdf, 섹션 12",
+    "difficulty": "hard"
+  },
+  {
+    "id": 21,
+    "category": "복합",
+    "question": "김철수 직원의 연차 잔여일과 연차 신청 절차를 함께 알려주십시오.",
+    "expected_answer": "김철수 직원의 연차 잔여일은 8일입니다. 연차 신청은 사내 HR 시스템에서 하며, 3일 이상은 2주 전, 당일은 전날 오전까지 신청하고 팀장 승인을 받아야 합니다.",
+    "expected_source": "직원 DB + HR_취업규칙_v1.0.pdf",
+    "difficulty": "medium"
+  },
+  {
+    "id": 22,
+    "category": "복합",
+    "question": "2024년 영업팀 매출 성과와 영업팀 직원 수를 함께 알려주십시오.",
+    "expected_answer": "2024년 영업팀 총 매출은 580,000,000원이며, 현재 영업팀 재직 직원 수는 8명입니다. 1인당 평균 매출 기여액은 약 72,500,000원입니다.",
+    "expected_source": "매출 DB + 직원 DB + 영업팀 성과보고서",
+    "difficulty": "hard"
+  },
+  {
+    "id": 23,
+    "category": "복합",
+    "question": "재택근무 신청 조건을 갖춘 개발팀 직원이 몇 명이나 됩니까?",
+    "expected_answer": "재택근무 신청 조건(입사 6개월 이상 정규직)을 갖춘 개발팀 직원은 10명입니다. 2명은 아직 수습 기간이라 신청 불가합니다.",
+    "expected_source": "직원 DB + HR_근무규정_v2.1.pdf",
+    "difficulty": "hard"
+  },
+  {
+    "id": 24,
+    "category": "복합",
+    "question": "이영희 직원의 올해 출장 횟수와 출장비 정산 절차를 알려주십시오.",
+    "expected_answer": "이영희 직원은 올해 총 3회 출장을 다녀왔습니다. 출장비 정산은 출장 후 5영업일 이내에 영수증과 함께 경비 정산 시스템에 제출하면 됩니다.",
+    "expected_source": "직원 DB + 재무_출장규정_v2.0.pdf",
+    "difficulty": "medium"
+  },
+  {
+    "id": 25,
+    "category": "복합",
+    "question": "성과 평가 S등급을 받은 직원의 인센티브 지급 기준은 무엇이며, 해당하는 직원은 몇 명입니까?",
+    "expected_answer": "성과 S등급 직원에게는 기본급의 200%가 성과급으로 지급됩니다. 2024년 상반기 기준 S등급 직원은 전체의 10%로 약 3명입니다.",
+    "expected_source": "직원 DB + HR_성과평가지침_v2.0.pdf",
+    "difficulty": "hard"
+  },
+  {
+    "id": 26,
+    "category": "복합",
+    "question": "육아휴직 중인 직원의 업무 공백을 어떻게 처리하고 있으며, 현재 육아휴직 중인 직원은 몇 명입니까?",
+    "expected_answer": "현재 육아휴직 중인 직원은 2명입니다. 업무 공백은 팀 내 업무 재배분과 필요 시 대체인력 채용을 통해 처리합니다(HR_복리후생규정 섹션 7.3).",
+    "expected_source": "직원 DB + HR_복리후생규정_v3.0.pdf",
+    "difficulty": "hard"
+  },
+  {
+    "id": 27,
+    "category": "복합",
+    "question": "자기계발비를 이미 전액 사용한 직원과 아직 사용하지 않은 직원의 비율은 어떻게 됩니까?",
+    "expected_answer": "2024년 기준 자기계발비 전액 사용 직원 18명(60%), 부분 사용 직원 8명(27%), 미사용 직원 4명(13%)입니다. 지원 한도는 연 50만원입니다.",
+    "expected_source": "직원 DB + HR_복리후생규정_v3.0.pdf",
+    "difficulty": "hard"
+  },
+  {
+    "id": 28,
+    "category": "복합",
+    "question": "고충처리를 신청한 직원의 처리 현황과 고충처리 절차를 알려주십시오.",
+    "expected_answer": "올해 고충 신청은 총 2건으로, 1건은 처리 완료, 1건은 처리 중입니다. 절차는 팀장 1차 처리 후 미해결 시 HR 위원회에 서면 신청하며 15일 내 결과를 통보합니다.",
+    "expected_source": "직원 DB + HR_취업규칙_v1.0.pdf",
+    "difficulty": "hard"
+  },
+  {
+    "id": 29,
+    "category": "복합",
+    "question": "신입사원 온보딩 프로그램의 비용 대비 만족도와 현재 온보딩 중인 직원 현황을 알려주십시오.",
+    "expected_answer": "현재 온보딩 진행 중인 신입사원은 2명(1주차 1명, 3주차 1명)입니다. 온보딩 비용은 1인당 약 200,000원이며, 최근 만족도 조사 결과 4.2/5.0점입니다.",
+    "expected_source": "직원 DB + HR_온보딩가이드_v1.5.pdf",
+    "difficulty": "hard"
+  },
+  {
+    "id": 30,
+    "category": "복합",
+    "question": "퇴직 예정자 현황과 퇴직금 산정 방법을 함께 설명해 주십시오.",
+    "expected_answer": "현재 퇴직 예정자는 3명으로, 각각 근속 5년, 3년, 8년입니다. 퇴직금은 근속연수 × 30일 × 평균임금(퇴직 전 3개월 평균)으로 산정됩니다.",
+    "expected_source": "직원 DB + HR_취업규칙_v1.0.pdf",
+    "difficulty": "hard"
+  }
+]

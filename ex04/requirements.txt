@@ -1,0 +1,27 @@
+# =====================================================================
+# ex04 VectorDB 구축 — Python 의존성 패키지 목록
+# =====================================================================
+# 설치 방법:
+#   python -m venv venv
+#   source venv/bin/activate   # macOS/Linux
+#   venv\Scripts\activate      # Windows
+#   pip install -r requirements.txt
+# =====================================================================
+
+# --- 문서 파싱 ---
+pypdf==4.3.1
+python-docx==1.1.2
+openpyxl==3.1.5
+
+# --- 임베딩 모델 ---
+# ko-sroberta-multitask 한국어 문장 임베딩
+sentence-transformers==3.3.1
+
+# --- VectorDB ---
+chromadb==1.5.1
+
+# --- 환경 변수 관리 ---
+python-dotenv==1.0.1
+
+# --- 유틸리티 ---
+tqdm==4.67.1

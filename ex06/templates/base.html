@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}메타코딩 Q&A 비서{% endblock %}</title>
+    <!-- Inter 폰트 (plan.md 1.6 웹 UI 통일 규칙) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- 전역 스타일 (ex05 동일 디자인) -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- 좌측 사이드바 (240px 고정, ex05 동일 디자인) -->
+    <aside class="sidebar">
+        <div class="brand">메타코딩 Q&A 비서</div>
+        <div class="nav-title">메뉴</div>
+        <a class="nav-link {% block nav_chat %}{% endblock %}" href="/chat">💬 통합 채팅</a>
+        <a class="nav-link" href="/health">✓ 상태 확인</a>
+
+        <div class="nav-title" style="margin-top: 16px;">관리</div>
+        <a class="nav-link {% if active_page == 'dashboard' %}active{% endif %}" href="/admin/dashboard">대시보드</a>
+        <a class="nav-link {% if active_page == 'employees' %}active{% endif %}" href="/admin/employees">직원 관리</a>
+        <a class="nav-link {% if active_page == 'leaves' %}active{% endif %}" href="/admin/leaves">휴가 관리</a>
+        <a class="nav-link {% if active_page == 'sales' %}active{% endif %}" href="/admin/sales">매출 관리</a>
+
+        <div class="sidebar-footer">
+            <small>ex06 통합 에이전트 설계</small><br>
+            <small>정형 + 비정형 통합 에이전트</small>
+        </div>
+    </aside>
+
+    <!-- 메인 콘텐츠 영역 -->
+    <main class="content">
+        <div class="page-header">
+            <div class="page-title">{% block page_title %}{% endblock %}</div>
+            <div class="page-subtitle">{% block page_subtitle %}{% endblock %}</div>
+        </div>
+
+        {% block content %}{% endblock %}
+    </main>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}통합 채팅 - 메타코딩 Q&A 비서{% endblock %}
+{% block nav_chat %}active{% endblock %}
+
+{% block page_title %}
+  HR 통합 에이전트
+  <span class="badge">에이전트 모드</span>
+{% endblock %}
+
+{% block page_subtitle %}
+  정형(DB) + 비정형(문서) 복합 질문 처리
+  <!-- 에이전트 모드 토글 -->
+  <label class="toggle-switch">
+    <input type="checkbox" id="agentModeToggle" checked />
+    <span class="toggle-slider"></span>
+  </label>
+  <span id="modeLabel" class="mode-label mode-agent">에이전트 ON</span>
+  <button onclick="clearChatHistory()" class="btn-clear-chat" title="대화 내역 초기화">
+    🗑️ 초기화
+  </button>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/chat.css">
+{% endblock %}
+
+{% block content %}
+<div class="chat-app-container">
+  <!-- 채팅 히스토리 영역 -->
+  <div id="chatHistory" class="chat-history">
+    <!-- 초기 환영 메시지 -->
+    <div class="chat-message ai-message">
+      <div class="avatar">🤖</div>
+      <div class="message-content welcome-message">
+        안녕하세요! HR 통합 에이전트입니다. 아래와 같은 질문을 해보세요.
+        <div class="example-queries">
+          <div class="example-category">
+            <span class="query-type-badge type-structured">정형</span>
+            <ul>
+              <li>김민준 연차 잔여일수 알려줘</li>
+              <li>영업부 11월 매출 합계가 얼마야?</li>
+              <li>개발부 직원 목록 보여줘</li>
+            </ul>
+          </div>
+          <div class="example-category">
+            <span class="query-type-badge type-unstructured">비정형</span>
+            <ul>
+              <li>온보딩 절차가 어떻게 되나요?</li>
+              <li>보안 정책에 대해 설명해줘</li>
+              <li>출장 비용 규정 알려줘</li>
+            </ul>
+          </div>
+          <div class="example-category">
+            <span class="query-type-badge type-hybrid">복합</span>
+            <ul>
+              <li>매출 상위 부서의 워케이션 규정은?</li>
+              <li>정시우 연차 현황과 연차 사용 규정 알려줘</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 로딩 인디케이터 -->
+  <div id="loadingIndicator" class="loading-indicator" style="display: none;">
+    <div class="spinner"></div>
+    <span>에이전트가 분석 중입니다...</span>
+  </div>
+
+  <!-- 하단 입력바 -->
+  <div class="chat-footer">
+    <form id="chatForm" class="chat-input-form" onsubmit="submitQuery(event)">
+      <textarea
+        id="queryInput"
+        class="chat-input"
+        placeholder="질문을 입력하세요 (Shift+Enter: 줄바꿈, Enter: 전송)"
+        rows="1"
+      ></textarea>
+      <button type="submit" class="btn-send" title="전송">
+        <svg viewBox="0 0 24 24" width="22" height="22">
+          <path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+        </svg>
+      </button>
+    </form>
+    <p class="chat-hint">Enter로 전송 | Shift+Enter로 줄바꿈 | PostgreSQL 없이도 샘플 데이터로 동작</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/chat.js"></script>
+{% endblock %}

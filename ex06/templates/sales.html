@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}매출 관리{% endblock %}
+{% block page_title %}매출 관리{% endblock %}
+{% block page_subtitle %}매출 등록 및 조회를 관리합니다{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="badge">매출 등록</div>
+    <form action="/admin/sales/create" method="post">
+        <div class="admin-grid">
+            <div>
+                <label for="sale_emp">담당자</label>
+                <select id="sale_emp" name="emp_no" required>
+                    <option value="">선택</option>
+                    {% for e in employees %}
+                    <option value="{{ e.emp_no }}">{{ e.emp_no }} ({{ e.name }} / {{ e.department }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="sale_amount">금액</label>
+                <input id="sale_amount" name="amount" type="number" required>
+            </div>
+            <div>
+                <label for="sale_date">매출 일자</label>
+                <input id="sale_date" name="sale_date" type="date" required>
+            </div>
+            <div>
+                <label for="sale_desc">항목</label>
+                <input id="sale_desc" name="description" placeholder="매출 항목 설명">
+            </div>
+        </div>
+        <button type="submit">등록</button>
+    </form>
+</div>
+
+<div class="card">
+    <div class="badge">기간별 매출 조회</div>
+    <form action="/admin/sales" method="get">
+        <div class="admin-grid">
+            <div>
+                <label for="period_start">시작일</label>
+                <input id="period_start" name="period_start" type="date" value="{{ period_start }}">
+            </div>
+            <div>
+                <label for="period_end">종료일</label>
+                <input id="period_end" name="period_end" type="date" value="{{ period_end }}">
+            </div>
+            <div style="display: flex; align-items: flex-end;">
+                <button type="submit" class="secondary">조회</button>
+            </div>
+        </div>
+    </form>
+    {% if period_sales %}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>부서</th>
+                    <th>담당자</th>
+                    <th>금액</th>
+                    <th>일자</th>
+                    <th>항목</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in period_sales %}
+                <tr>
+                    <td>{{ s.department }}</td>
+                    <td>{{ s.name }}</td>
+                    <td>{{ s.amount }}원</td>
+                    <td>{{ s.date }}</td>
+                    <td>{{ s.description }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+
+<div class="card">
+    <div class="badge">부서별 매출 집계</div>
+    <form action="/admin/sales" method="get" style="display: flex; gap: 1rem; align-items: flex-end;">
+        <div style="flex: 1;">
+            <label for="dept_filter">부서</label>
+            <select id="dept_filter" name="dept">
+                <option value="">선택</option>
+                {% for d in departments %}
+                <option value="{{ d }}" {% if dept == d %}selected{% endif %}>{{ d }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="secondary">집계</button>
+    </form>
+    {% if dept_summary %}
+    <div style="margin-top: 12px; font-size: 0.95rem;">
+        <strong>{{ dept_summary.department }}</strong> 총 매출: <strong>{{ dept_summary.total_amount }}</strong>
+    </div>
+    {% endif %}
+</div>
+
+<div class="card">
+    <div class="badge">전체 매출 (최근 50건)</div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>부서</th>
+                    <th>담당자</th>
+                    <th>금액</th>
+                    <th>일자</th>
+                    <th>항목</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in sales %}
+                <tr>
+                    <td>{{ s.department }}</td>
+                    <td>{{ s.name }}</td>
+                    <td>{{ s.amount }}원</td>
+                    <td>{{ s.date }}</td>
+                    <td>{{ s.description }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

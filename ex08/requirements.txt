@@ -1,0 +1,79 @@
+# ex08 RAG 튜닝 - 의존성
+# 설치: pip install -r requirements.txt
+
+# FastAPI 웹 프레임워크
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+jinja2==3.1.4
+python-multipart==0.0.17
+
+# LangChain 에코시스템 (0.3.x)
+langchain==0.3.7
+langchain-core==0.3.63
+langchain-community==0.3.7
+langchain-ollama==0.2.0
+langchain-openai==0.2.9
+langchain-chroma==0.2.4
+
+# 텍스트 분할 (청킹 실험용, ex08 추가)
+langchain-text-splitters==0.3.8
+
+# 시맨틱 청킹 (선택 — 실험 3에서 사용, 없으면 재귀 청킹으로 대체)
+langchain-experimental==0.3.4
+
+# 벡터 DB
+chromadb==1.5.1
+
+# 임베딩 모델
+langchain-huggingface==0.1.2
+sentence-transformers==3.3.1
+huggingface-hub==0.30.2
+
+# PostgreSQL 클라이언트
+psycopg2-binary==2.9.10
+sqlalchemy==2.0.35
+
+# 문서 파싱 (data/docs/ 원본 문서 자동 구축용)
+pypdf==4.3.1
+python-docx==1.1.2
+openpyxl==3.1.5
+
+# 문서 캡처 + 파싱 비교 (ex08 섹션 9~11)
+PyMuPDF==1.24.0
+pdfplumber==0.11.4
+Pillow==10.4.0
+reportlab==4.2.5
+matplotlib==3.9.0
+
+# BM25 (Hybrid Search, ex08 추가)
+rank-bm25==0.2.2
+
+# OCR (ex08 추가)
+easyocr==1.7.2
+
+# 데이터 처리 (ex08 추가)
+numpy==1.26.4
+pandas==2.2.3
+
+# 출력 형식 (ex08 추가)
+tabulate==0.9.0
+rich==13.9.4
+
+# 환경 변수
+python-dotenv==1.0.1
+
+# 데이터 검증
+pydantic==2.10.1
+
+# HTTP 클라이언트
+httpx==0.28.0
+
+# 타입 힌트 지원
+typing-extensions==4.12.2
+
+# 선택: LLM 모니터링
+# langfuse==2.60.5
+
+# 선택: RAGAS 평가 프레임워크 (USE_RAGAS=true 시 필요)
+# ragas==0.2.8
+# datasets==3.2.0

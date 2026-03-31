@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}메타코딩 Q&A 비서{% endblock %}</title>
+    <!-- Inter 폰트 (plan.md 1.6 웹 UI 통일 규칙) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- 전역 스타일 (ex02 admin.css 기반) -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- 좌측 사이드바 (240px 고정, ex02 동일 디자인) -->
+    <aside class="sidebar">
+        <div class="brand">메타코딩 Q&A 비서</div>
+        <div class="nav-title">메뉴</div>
+        <a class="nav-link {% if active_page == 'chat' %}active{% endif %}" href="/chat">💬 Q&amp;A 채팅</a>
+        <a class="nav-link {% if active_page == 'health' %}active{% endif %}" href="/health">상태 확인</a>
+
+        <div class="sidebar-footer">
+            <small>사내 AI 비서 — RAG Q&A 엔진</small>
+        </div>
+    </aside>
+
+    <!-- 메인 콘텐츠 영역 -->
+    <main class="content">
+        <div class="page-header">
+            <div class="page-title">{% block page_title %}{% endblock %}</div>
+            <div class="page-subtitle">{% block page_subtitle %}{% endblock %}</div>
+        </div>
+
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

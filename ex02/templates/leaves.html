@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}휴가 관리{% endblock %}
+{% block page_title %}휴가 관리{% endblock %}
+{% block page_subtitle %}휴가 사용 등록 및 잔여량을 관리합니다{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="badge">휴가 사용 등록</div>
+    <form action="/admin/leaves/usage" method="post">
+        <div class="grid">
+            <div>
+                <label for="leave_emp_no">직원</label>
+                <select id="leave_emp_no" name="emp_no" required>
+                    <option value="">선택</option>
+                    {% for e in employees %}
+                    <option value="{{ e.emp_no }}">{{ e.emp_no }} ({{ e.name }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="leave_days">사용 일수</label>
+                <input id="leave_days" name="days" type="number" step="0.5" min="0.5" required>
+            </div>
+        </div>
+        <button type="submit">등록</button>
+    </form>
+</div>
+
+<div class="card">
+    <div class="badge">휴가 정보 수정</div>
+    <form action="/admin/leaves/update" method="post">
+        <div class="grid">
+            <div>
+                <label for="leave_update_emp_no">직원</label>
+                <select id="leave_update_emp_no" name="emp_no" required>
+                    <option value="">선택</option>
+                    {% for e in employees %}
+                    <option value="{{ e.emp_no }}">{{ e.emp_no }} ({{ e.name }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="leave_year">연도</label>
+                <input id="leave_year" name="year" type="number" value="2025" required>
+            </div>
+            <div>
+                <label for="leave_total">총량</label>
+                <input id="leave_total" name="total" type="number" step="0.5" required>
+            </div>
+            <div>
+                <label for="leave_used">사용</label>
+                <input id="leave_used" name="used" type="number" step="0.5" required>
+            </div>
+        </div>
+        <button type="submit" class="secondary">수정</button>
+    </form>
+</div>
+
+<div class="card">
+    <div class="badge">휴가 현황 검색</div>
+    <form action="/admin/leaves" method="get" style="display: flex; gap: 1rem; align-items: flex-end;">
+        <div style="flex: 1;">
+            <label for="search_employee_name">직원 이름</label>
+            <input id="search_employee_name" name="employee_name" value="{{ search_employee_name }}" placeholder="직원 이름 검색">
+        </div>
+        <button type="submit" class="secondary">검색</button>
+    </form>
+</div>
+
+<div class="card">
+    <div class="badge">휴가 잔여 현황</div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>사번</th>
+                    <th>직원</th>
+                    <th>연도</th>
+                    <th>총량</th>
+                    <th>사용</th>
+                    <th>잔여</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for l in leaves %}
+                <tr>
+                    <td>{{ l.emp_no }}</td>
+                    <td>{{ l.name }}</td>
+                    <td>{{ l.year }}</td>
+                    <td>{{ l.total }}일</td>
+                    <td>{{ l.used }}일</td>
+                    <td>{{ l.remaining }}일</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

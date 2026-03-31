@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ConnectHR Q&A 비서{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="brand">ConnectHR Q&A 비서</div>
+        <div class="nav-title">메뉴</div>
+        <a class="nav-link {% block nav_chat %}{% endblock %}" href="/chat">채팅</a>
+        <a class="nav-link" href="/stats">상태 확인</a>
+
+        <div class="nav-title" style="margin-top: 16px;">관리</div>
+        <a class="nav-link {% if active_page == 'dashboard' %}active{% endif %}" href="/admin/dashboard">대시보드</a>
+        <a class="nav-link {% if active_page == 'employees' %}active{% endif %}" href="/admin/employees">직원 관리</a>
+        <a class="nav-link {% if active_page == 'leaves' %}active{% endif %}" href="/admin/leaves">휴가 관리</a>
+        <a class="nav-link {% if active_page == 'sales' %}active{% endif %}" href="/admin/sales">매출 관리</a>
+
+        <div class="sidebar-footer">
+            <small>ex10 PDF 파싱 + 평가</small><br>
+            <small>RAG + 캡처 이미지 + 관리 대시보드</small>
+        </div>
+    </aside>
+
+    <main class="content">
+        <div class="page-header">
+            <div class="page-title">{% block page_title %}{% endblock %}</div>
+            <div class="page-subtitle">{% block page_subtitle %}{% endblock %}</div>
+        </div>
+
+        {% block content %}{% endblock %}
+    </main>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

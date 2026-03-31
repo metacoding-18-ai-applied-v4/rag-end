@@ -1,0 +1,40 @@
+# ex06 통합 에이전트 설계 - 의존성
+# 설치: pip install -r requirements.txt
+
+# FastAPI 웹 프레임워크
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+jinja2==3.1.4
+python-multipart==0.0.17
+
+# LangChain 에코시스템 (0.3.x)
+langchain==0.3.7
+langchain-core==0.3.63
+langchain-community==0.3.7
+langchain-ollama==0.2.0
+langchain-openai==0.2.9
+
+# 벡터 DB (mcp_tools.py에서 chromadb를 직접 사용)
+chromadb==1.5.1
+
+# 임베딩 모델
+langchain-huggingface==0.1.2
+sentence-transformers==3.3.1
+
+# PostgreSQL 클라이언트
+psycopg2-binary==2.9.10
+sqlalchemy==2.0.35
+
+# 문서 파싱 (data/docs/ 원본 문서 자동 구축용)
+pypdf==4.3.1
+python-docx==1.1.2
+openpyxl==3.1.5
+
+# 환경 변수
+python-dotenv==1.0.1
+
+# 데이터 검증
+pydantic==2.10.1
+
+# HTTP 클라이언트
+httpx==0.28.0

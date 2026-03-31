@@ -1,0 +1,340 @@
+/* ============================================================
+   ex02 Admin UI 스타일시트
+   legacy/ex02/app/static/css/admin.css 기반
+   폰트: Inter (Google Fonts), 색상: 검정/흰색 + 금색(#d4af37)
+   ============================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+:root {
+    --bg:           #ffffff;
+    --surface:      #ffffff;
+    --surface-alt:  #f6f6f6;
+    --border:       #e5e5e5;
+    --text:         #171717;
+    --muted:        #525252;
+    --primary:      #171717;
+    --secondary:    #404040;
+    --accent:       #d4af37;
+    --accent-ink:   #1a1400;
+    --focus:        #111827;
+    --shadow:       0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background: var(--surface-alt);
+    color: var(--text);
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    display: flex;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* ============================================================
+   사이드바 (240px 고정)
+   ============================================================ */
+.sidebar {
+    width: 240px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 24px 16px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    flex-shrink: 0;
+}
+
+.brand {
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 24px;
+}
+
+.nav-title {
+    color: var(--muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+    border: 1px solid transparent;
+    transition: background 0.2s ease, border-color 0.2s ease;
+    cursor: pointer;
+}
+
+.nav-link:hover {
+    background: var(--surface-alt);
+    border-color: var(--border);
+}
+
+.nav-link.active {
+    border-color: var(--primary);
+    background: #f2f2f2;
+}
+
+/* ============================================================
+   메인 콘텐츠
+   ============================================================ */
+.content {
+    flex: 1;
+    min-width: 0;
+    padding: 28px 32px 40px;
+}
+
+.page-header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.page-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.page-subtitle {
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+/* ============================================================
+   카드 & 그리드
+   ============================================================ */
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+}
+
+.section-gap {
+    margin-top: 24px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+/* ============================================================
+   통계 카드
+   ============================================================ */
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.stat-card {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    background: var(--surface);
+}
+
+.stat-label {
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+/* ============================================================
+   폼 요소
+   ============================================================ */
+label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 6px;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    margin-bottom: 12px;
+    min-height: 44px;
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible,
+.nav-link:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+}
+
+/* 읽기 전용 필드 */
+input[readonly] {
+    background: var(--surface-alt);
+    color: var(--muted);
+    cursor: not-allowed;
+}
+
+/* ============================================================
+   버튼
+   ============================================================ */
+button {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--primary);
+    background: var(--primary);
+    color: #ffffff;
+    font-weight: 600;
+    font-family: inherit;
+    font-size: 0.9rem;
+    min-height: 44px;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+button:hover {
+    background: var(--secondary);
+    border-color: var(--secondary);
+}
+
+button.secondary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+}
+
+button.secondary:hover {
+    filter: brightness(0.92);
+}
+
+button.ghost {
+    background: transparent;
+    color: var(--primary);
+}
+
+button.ghost:hover {
+    background: var(--surface-alt);
+}
+
+/* ============================================================
+   테이블
+   ============================================================ */
+.table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    min-width: 640px;
+}
+
+th, td {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+}
+
+th {
+    color: var(--muted);
+    font-weight: 600;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+/* ============================================================
+   유틸리티
+   ============================================================ */
+.row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.row > div {
+    flex: 1;
+    min-width: 240px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: rgba(212, 175, 55, 0.15);
+    color: #6b5200;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.muted {
+    color: var(--muted);
+}
+
+.divider {
+    height: 1px;
+    background: var(--border);
+    margin: 16px 0;
+}
+
+/* ============================================================
+   반응형 (960px 이하)
+   ============================================================ */
+@media (max-width: 960px) {
+    body { flex-direction: column; }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .brand { margin-bottom: 0; }
+    .nav-title { display: none; }
+    .nav-link { margin-bottom: 0; }
+
+    .content { padding: 20px; }
+
+    table { min-width: 520px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+}

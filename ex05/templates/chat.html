@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}RAG Q&A 채팅 - 메타코딩 Q&A 비서{% endblock %}
+
+{% block page_title %}
+  RAG Q&amp;A 채팅
+  <span class="badge">AI 연동</span>
+{% endblock %}
+
+{% block page_subtitle %}
+  사내 문서 기반 질의응답 시스템 &mdash; 사내 규정, 인사 정책, IT 가이드 등을 질문해 보세요.
+  <button onclick="clearChatHistory()" class="btn-clear-chat" title="대화 내역 지우기">
+    🗑️ 내역 지우기
+  </button>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/chat.css">
+{% endblock %}
+
+{% block content %}
+<div class="chat-app-container">
+  <!-- 채팅 히스토리 영역 -->
+  <div id="chatHistory" class="chat-history">
+    <!-- 초기 환영 메시지 -->
+    <div class="chat-message ai-message">
+      <div class="avatar">🤖</div>
+      <div class="message-content">
+        안녕하세요! 메타코딩 Q&A 비서입니다.<br>
+        사내 규정, 보안 정책, 예산 현황, 서비스 전략 등
+        궁금한 점을 자유롭게 질문해 주세요.
+      </div>
+    </div>
+  </div>
+
+  <!-- 로딩 인디케이터 -->
+  <div id="loadingIndicator" class="loading-indicator" style="display: none;">
+    <div class="spinner"></div>
+    <span>AI가 문서를 검색하고 있습니다...</span>
+  </div>
+
+  <!-- 하단 입력바 -->
+  <div class="chat-footer">
+    <form id="chatForm" class="chat-input-form">
+      <input
+        type="text"
+        id="questionInput"
+        placeholder="병가 신청 시 증빙 서류가 필요한가요?"
+        autocomplete="off"
+        required
+        class="chat-input"
+      />
+      <button type="submit" class="btn-send" title="전송">
+        <svg viewBox="0 0 24 24" width="22" height="22">
+          <path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+        </svg>
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- 채팅 로직 (Fetch 기반, ex02 qa.js 패턴) -->
+<script src="/static/js/chat.js"></script>
+{% endblock %}

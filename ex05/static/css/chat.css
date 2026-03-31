@@ -1,0 +1,261 @@
+/* =====================================================
+   채팅 전용 스타일 (ex02 qa.css 기반)
+   Gemini 스타일: 사용자=파랑 우측, AI=회색 좌측, 🤖 아바타
+   ===================================================== */
+
+/* ---- 채팅 컨테이너 ---- */
+.chat-app-container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 180px);
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    position: relative;
+}
+
+/* ---- 채팅 히스토리 영역 ---- */
+.chat-history {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    scroll-behavior: smooth;
+}
+
+/* ---- 메시지 공통 ---- */
+.chat-message {
+    display: flex;
+    max-width: 85%;
+    gap: 12px;
+}
+
+.ai-message {
+    align-self: flex-start;
+}
+
+.user-message {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+/* ---- 아바타 ---- */
+.avatar {
+    width: 36px;
+    height: 36px;
+    background: #e6f6ec;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    flex-shrink: 0;
+}
+
+/* ---- 메시지 말풍선 ---- */
+.message-content {
+    padding: 14px 18px;
+    border-radius: 18px;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+    word-break: break-word;
+}
+
+/* AI 메시지: 회색 좌측 */
+.ai-message .message-content {
+    background: #f8f9fa;
+    color: #24292e;
+    border-top-left-radius: 4px;
+    border: 1px solid #eee;
+}
+
+/* 사용자 메시지: 파랑 우측 */
+.user-message .message-content {
+    background: #0366d6;
+    color: #ffffff;
+    border-top-right-radius: 4px;
+}
+
+/* ---- 근거 아코디언 ---- */
+.source-container {
+    margin-top: 14px;
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+}
+
+.source-header {
+    cursor: pointer;
+    font-size: 0.83rem;
+    color: #0366d6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    padding: 4px 0;
+}
+
+.source-header:hover {
+    text-decoration: underline;
+}
+
+.source-body {
+    display: none;
+    margin-top: 10px;
+}
+
+.source-container.active .source-body {
+    display: block;
+}
+
+.source-container.active .arrow {
+    transform: rotate(180deg);
+}
+
+.arrow {
+    transition: transform 0.2s;
+    display: inline-block;
+    font-size: 0.65rem;
+}
+
+/* ---- 출처 목록 ---- */
+.source-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.source-item {
+    background: #fff;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #f0f0f0;
+    font-size: 0.78rem;
+}
+
+.source-item .source-doc {
+    color: #0366d6;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.source-item .source-page {
+    color: #888;
+    font-size: 0.72rem;
+}
+
+.source-item .source-snippet {
+    color: #555;
+    margin-top: 4px;
+    line-height: 1.5;
+}
+
+.no-sources {
+    color: #aaa;
+    font-style: italic;
+    font-size: 0.8rem;
+}
+
+/* ---- 하단 입력바 ---- */
+.chat-footer {
+    padding: 10px 20px 18px 20px;
+    background: #fff;
+    border-top: 1px solid #f1f1f1;
+}
+
+.chat-input-form {
+    display: flex;
+    background: #f1f3f4;
+    border-radius: 28px;
+    padding: 4px 14px;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+.chat-input-form:focus-within {
+    background: #fff;
+    box-shadow: 0 1px 6px rgba(32, 33, 36, 0.25);
+}
+
+.chat-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 10px 8px;
+    font-size: 0.95rem;
+    outline: none;
+    color: #171717;
+    font-family: inherit;
+}
+
+.chat-input::placeholder {
+    color: #888;
+}
+
+.btn-send {
+    background: none;
+    border: none;
+    color: #0366d6;
+    padding: 6px;
+    cursor: pointer;
+    opacity: 0.65;
+    transition: opacity 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.btn-send:hover {
+    opacity: 1;
+    background: rgba(3, 102, 214, 0.08);
+}
+
+/* ---- 로딩 인디케이터 ---- */
+.loading-indicator {
+    position: absolute;
+    bottom: 85px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.96);
+    padding: 10px 20px;
+    border-radius: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 10;
+    border: 1px solid #eee;
+    color: #555;
+    font-size: 0.88rem;
+    white-space: nowrap;
+}
+
+.spinner {
+    width: 17px;
+    height: 17px;
+    border: 2px solid #ddd;
+    border-top-color: #0366d6;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ---- 오류 메시지 ---- */
+.error-message .message-content {
+    background: #fff5f5;
+    border-color: #fecaca;
+    color: #dc2626;
+}

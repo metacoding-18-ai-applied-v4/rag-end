@@ -1,0 +1,21 @@
+version: "3.9"
+
+# 리뷰용 docker-compose: 5434 포트 사용 (기존 5432 포트 충돌 방지)
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: metacoding_db_review
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: metacoding_db
+      POSTGRES_USER: metacoding
+      POSTGRES_PASSWORD: metacoding_pass
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./data/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U metacoding -d metacoding_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10

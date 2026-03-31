@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}대시보드{% endblock %}
+{% block page_title %}대시보드{% endblock %}
+{% block page_subtitle %}DB 위치: {{ db_path }}{% endblock %}
+
+{% block content %}
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="stat-label">직원 수</div>
+        <div class="stat-value">{{ employees_count }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">연차 기록 수</div>
+        <div class="stat-value">{{ leaves_count }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">매출 기록 수</div>
+        <div class="stat-value">{{ sales_count }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">총 매출</div>
+        <div class="stat-value">{{ "{:,}".format(sales_total) }}원</div>
+    </div>
+</div>
+
+<div class="card section-gap">
+    <div class="badge">바로가기</div>
+    <div class="admin-grid">
+        <a class="nav-link" href="/admin/employees">직원 관리</a>
+        <a class="nav-link" href="/admin/leaves">휴가 관리</a>
+        <a class="nav-link" href="/admin/sales">매출 관리</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="badge">최근 매출</div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>부서</th>
+                    <th>담당자</th>
+                    <th>금액</th>
+                    <th>일자</th>
+                    <th>항목</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in recent_sales %}
+                <tr>
+                    <td>{{ s.department }}</td>
+                    <td>{{ s.name }}</td>
+                    <td>{{ s.amount }}</td>
+                    <td>{{ s.date }}</td>
+                    <td>{{ s.description }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

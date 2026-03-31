@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}직원 관리{% endblock %}
+{% block page_title %}직원 관리{% endblock %}
+{% block page_subtitle %}직원 정보를 등록/수정/삭제합니다{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="badge">직원 등록</div>
+    <form action="/admin/employees/create" method="post">
+        <div class="grid">
+            <div>
+                <label for="emp_name">이름</label>
+                <input id="emp_name" name="name" required>
+            </div>
+            <div>
+                <label for="emp_dept">부서</label>
+                <select id="emp_dept" name="dept" required>
+                    <option value="">선택</option>
+                    {% for d in departments %}
+                    <option value="{{ d }}">{{ d }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="emp_position">직급</label>
+                <select id="emp_position" name="position" required>
+                    <option value="">선택</option>
+                    {% for p in positions %}
+                    <option value="{{ p }}">{{ p }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="emp_hire">입사일</label>
+                <input id="emp_hire" name="hire_date" type="date" required>
+            </div>
+        </div>
+        <button type="submit">등록</button>
+    </form>
+</div>
+
+<div class="card">
+    <div class="badge">직원 수정</div>
+    <form action="/admin/employees/update" method="post">
+        <div class="grid">
+            <div>
+                <label for="emp_update_no">사번</label>
+                <select id="emp_update_no" name="emp_no" required>
+                    <option value="">선택</option>
+                    {% for e in employees %}
+                    <option value="{{ e.emp_no }}">{{ e.emp_no }} ({{ e.name }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="emp_update_name">이름</label>
+                <input id="emp_update_name" name="name" placeholder="미입력 시 유지">
+            </div>
+            <div>
+                <label for="emp_update_dept">부서</label>
+                <select id="emp_update_dept" name="dept">
+                    <option value="">미입력 시 유지</option>
+                    {% for d in departments %}
+                    <option value="{{ d }}">{{ d }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="emp_update_position">직급</label>
+                <select id="emp_update_position" name="position">
+                    <option value="">미입력 시 유지</option>
+                    {% for p in positions %}
+                    <option value="{{ p }}">{{ p }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="emp_update_hire">입사일</label>
+                <input id="emp_update_hire" name="hire_date" type="date">
+            </div>
+        </div>
+        <button type="submit" class="secondary">수정</button>
+    </form>
+</div>
+
+<div class="card">
+    <div class="badge">직원 삭제</div>
+    <form action="/admin/employees/delete" method="post">
+        <div class="grid">
+            <div>
+                <label for="emp_delete_no">사번</label>
+                <select id="emp_delete_no" name="emp_no" required>
+                    <option value="">선택</option>
+                    {% for e in employees %}
+                    <option value="{{ e.emp_no }}">{{ e.emp_no }} ({{ e.name }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="ghost">삭제</button>
+    </form>
+</div>
+
+<div class="card">
+    <div class="badge">직원 검색</div>
+    <form action="/admin/employees" method="get">
+        <div class="grid">
+            <div>
+                <label for="search_name">이름</label>
+                <input id="search_name" name="name" value="{{ search_name }}" placeholder="이름 검색">
+            </div>
+            <div>
+                <label for="search_dept">부서</label>
+                <input id="search_dept" name="dept" value="{{ search_dept }}" placeholder="부서 검색">
+            </div>
+            <div style="display: flex; align-items: flex-end;">
+                <button type="submit" class="secondary">검색</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <div class="badge">직원 목록</div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>사번</th>
+                    <th>이름</th>
+                    <th>부서</th>
+                    <th>직급</th>
+                    <th>입사일</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in employees %}
+                <tr>
+                    <td>{{ e.emp_no }}</td>
+                    <td>{{ e.name }}</td>
+                    <td>{{ e.dept }}</td>
+                    <td>{{ e.position }}</td>
+                    <td>{{ e.hire_date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
