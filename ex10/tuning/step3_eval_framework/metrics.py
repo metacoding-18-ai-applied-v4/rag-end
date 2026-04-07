@@ -1,5 +1,7 @@
 """step3 — RAG 평가 지표 계산 함수."""
 
+from ._metrics_utils import calculate_mrr
+
 
 def calculate_precision_at_k(
     retrieved_sources: list[str],
@@ -7,9 +9,6 @@ def calculate_precision_at_k(
     k: int,
 ) -> float:
     """Precision@K: 상위 K개 결과 중 관련 문서 비율."""
-    # TODO: retrieved_sources에서 상위 K개 선택
-    # TODO: relevant_sources와 비교하여 적중 수 계산
-    # TODO: 적중 수 / K 반환
     top_k = retrieved_sources[:k]
     relevant_set = set(relevant_sources)
     hits = sum(1 for src in top_k if any(rel in src for rel in relevant_set))
@@ -22,9 +21,6 @@ def calculate_recall_at_k(
     k: int,
 ) -> float:
     """Recall@K: 관련 문서 중 상위 K개에 포함된 비율."""
-    # TODO: retrieved_sources에서 상위 K개 선택
-    # TODO: relevant_sources 중 상위 K개에 포함된 수 계산
-    # TODO: 포함된 수 / 전체 관련 문서 수 반환
     top_k = retrieved_sources[:k]
     relevant_set = set(relevant_sources)
     hits = sum(1 for rel in relevant_set if any(rel in src for src in top_k))
@@ -39,12 +35,6 @@ def estimate_hallucination_rate(
 
     핵심 단어(4자 이상)의 컨텍스트 등장 비율이 30% 미만이면 환각으로 판정.
     """
-    # TODO: 각 답변-컨텍스트 쌍에 대해:
-    #   - 컨텍스트를 합쳐 소문자 변환
-    #   - 답변에서 4자 이상 단어 추출
-    #   - 컨텍스트 단어와 겹치는 비율 계산
-    #   - 30% 미만이면 환각 카운트 증가
-    # TODO: 환각 비율 = 환각 수 / 전체 답변 수
     hallucination_count = 0
 
     for answer, context_docs in zip(answers, contexts):
@@ -58,32 +48,3 @@ def estimate_hallucination_rate(
                 hallucination_count += 1
 
     return hallucination_count / len(answers) if answers else 0.0
-
-
-def calculate_mrr(
-    retrieved_sources_list: list[list[str]],
-    relevant_sources_list: list[list[str]],
-) -> float:
-    """Mean Reciprocal Rank: 첫 번째 관련 문서의 순위 역수 평균.
-
-    각 질문에 대해 검색된 문서 목록에서 첫 번째 관련 문서가 나타나는
-    위치의 역수를 계산하고, 전체 질문에 대해 평균을 낸다.
-    """
-    # TODO: 각 질문에 대해:
-    #   - 검색 결과에서 첫 번째 관련 문서 위치 찾기
-    #   - reciprocal rank = 1 / rank (못 찾으면 0)
-    # TODO: 전체 reciprocal rank 평균 반환
-    reciprocal_ranks = []
-
-    for retrieved, relevant in zip(retrieved_sources_list, relevant_sources_list):
-        relevant_set = set(relevant)
-        rr = 0.0
-
-        for rank, src in enumerate(retrieved, 1):
-            if any(rel in src for rel in relevant_set):
-                rr = 1.0 / rank
-                break
-
-        reciprocal_ranks.append(rr)
-
-    return sum(reciprocal_ranks) / len(reciprocal_ranks) if reciprocal_ranks else 0.0

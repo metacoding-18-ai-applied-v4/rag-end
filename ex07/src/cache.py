@@ -1,12 +1,18 @@
 """ex07 응답 캐시 및 임베딩 캐시."""
 
-import hashlib
-import json
 import logging
 import os
-import pickle
 import time
 from pathlib import Path
+
+from ._cache_utils import (
+    make_response_key,
+    response_cache_stats,
+    response_cache_clear,
+    embedding_get,
+    embedding_set,
+    embedding_cache_stats,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -28,20 +34,9 @@ class ResponseCache:
         self._misses = 0
         logger.info("[ResponseCache] 초기화 완료 (TTL: %d초, 최대 크기: %d)", ttl, max_size)
 
-    def _make_key(self, query, context=""):
-        """쿼리와 컨텍스트로 캐시 키를 생성합니다."""
-        # TODO: query와 context를 결합하여 SHA-256 해시 키를 생성한다
-        raw = f"{query}::{context}"
-        return hashlib.sha256(raw.encode("utf-8")).hexdigest()
-
     def get(self, query, context=""):
-        """캐시에서 응답을 조회합니다."""
-        # TODO: _make_key()로 키를 생성한다
-        # TODO: _store에서 키를 조회한다
-        # TODO: 키가 없으면 미스 카운트 증가 후 None 반환
-        # TODO: 만료되었으면 항목 삭제, 미스 카운트 증가 후 None 반환
-        # TODO: 유효하면 히트 카운트 증가 후 값 반환
-        key = self._make_key(query, context)
+        """캐시에서 응답을 조회합니다 (TTL 만료 체크)."""
+        key = make_response_key(query, context)
 
         entry = self._store.get(key)
         if entry is None:
@@ -51,7 +46,6 @@ class ResponseCache:
 
         value, expires_at = entry
         if time.time() > expires_at:
-            # 만료된 항목 제거
             del self._store[key]
             self._misses += 1
             logger.debug("[ResponseCache] 만료: key=%s...", key[:12])
@@ -59,17 +53,12 @@ class ResponseCache:
 
         self._hits += 1
         logger.info("[ResponseCache] 적중: key=%s... (잔여 TTL: %.0f초)", key[:12], expires_at - time.time())
-
         return value
 
     def set(self, query, value, context=""):
-        """캐시에 응답을 저장합니다."""
-        # TODO: _make_key()로 키를 생성한다
-        # TODO: 최대 크기 초과 시 가장 오래된 항목을 제거한다
-        # TODO: 만료 시간을 계산하여 (value, expires_at) 튜플로 저장한다
-        key = self._make_key(query, context)
+        """캐시에 응답을 저장합니다 (max_size 초과 시 LRU 정리)."""
+        key = make_response_key(query, context)
 
-        # 최대 크기 초과 시 가장 오래된 항목 제거
         if len(self._store) >= self.max_size:
             oldest_key = min(self._store, key=lambda k: self._store[k][1])
             del self._store[oldest_key]
@@ -77,33 +66,15 @@ class ResponseCache:
 
         expires_at = time.time() + self.ttl
         self._store[key] = (value, expires_at)
-
         logger.info("[ResponseCache] 저장: key=%s... (만료: %.0f초 후)", key[:12], self.ttl)
 
     def clear(self):
         """만료된 캐시 항목을 제거합니다."""
-        # TODO: 현재 시간 기준 만료된 항목들을 찾아 삭제한다
-        # TODO: 삭제된 항목 수를 반환한다
-        now = time.time()
-        expired_keys = [k for k, (_, exp) in self._store.items() if now > exp]
-        for key in expired_keys:
-            del self._store[key]
-        logger.info("[ResponseCache] 만료 항목 %d개 제거", len(expired_keys))
-        return len(expired_keys)
+        return response_cache_clear(self)
 
     def stats(self):
         """캐시 통계를 반환합니다."""
-        # TODO: total_items, hits, misses, hit_rate_percent, ttl_seconds, max_size를 딕셔너리로 반환한다
-        total = self._hits + self._misses
-        hit_rate = (self._hits / total * 100) if total > 0 else 0.0
-        return {
-            "total_items": len(self._store),
-            "hits": self._hits,
-            "misses": self._misses,
-            "hit_rate_percent": round(hit_rate, 2),
-            "ttl_seconds": self.ttl,
-            "max_size": self.max_size,
-        }
+        return response_cache_stats(self)
 
 
 class EmbeddingCache:
@@ -117,67 +88,22 @@ class EmbeddingCache:
         self._misses = 0
         logger.info("[EmbeddingCache] 초기화 완료 (캐시 디렉토리: %s)", self.cache_dir)
 
-    def _make_cache_path(self, text):
-        """텍스트로부터 캐시 파일 경로를 생성합니다."""
-        # TODO: text의 SHA-256 해시로 .pkl 파일 경로를 생성한다
-        key = hashlib.sha256(text.encode("utf-8")).hexdigest()
-        return self.cache_dir / f"{key}.pkl"
+    def get_or_compute(self, text, compute_fn):
+        """캐시 히트면 반환, 미스면 compute_fn으로 계산 후 저장합니다."""
+        emb, hits_delta, misses_delta = embedding_get(self.cache_dir, text, None)
+        self._hits += hits_delta
+        self._misses += misses_delta
 
-    def get(self, text):
-        """캐시에서 임베딩 벡터를 조회합니다."""
-        # TODO: _make_cache_path()로 경로를 구한다
-        # TODO: 파일이 없으면 미스 카운트 증가 후 None 반환
-        # TODO: 파일이 있으면 pickle.load()로 읽어서 반환한다
-        # TODO: 파일 손상 시 삭제 후 None 반환
-        cache_path = self._make_cache_path(text)
+        if emb is not None:
+            return emb
 
-        if not cache_path.exists():
-            self._misses += 1
-            logger.debug("[EmbeddingCache] 미스: %s", cache_path.name[:16])
-            return None
-
-        try:
-            with open(cache_path, "rb") as f:
-                embedding = pickle.load(f)
-            self._hits += 1
-            logger.debug("[EmbeddingCache] 적중: %s", cache_path.name[:16])
-            return embedding
-        except (pickle.UnpicklingError, EOFError) as exc:
-            logger.warning("[EmbeddingCache] 캐시 파일 손상, 삭제: %s (%s)", cache_path.name, exc)
-            cache_path.unlink(missing_ok=True)
-            self._misses += 1
-            return None
-
-    def set(self, text, embedding):
-        """캐시에 임베딩 벡터를 저장합니다."""
-        # TODO: _make_cache_path()로 경로를 구한다
-        # TODO: pickle.dump()로 임베딩 벡터를 파일에 저장한다
-        cache_path = self._make_cache_path(text)
-
-        try:
-            with open(cache_path, "wb") as f:
-                pickle.dump(embedding, f)
-            logger.debug("[EmbeddingCache] 저장: %s (%d dims)", cache_path.name[:16], len(embedding))
-        except OSError as exc:
-            logger.error("[EmbeddingCache] 저장 실패: %s", exc)
-            raise
+        emb = compute_fn(text)
+        embedding_set(self.cache_dir, text, emb)
+        return emb
 
     def stats(self):
         """캐시 통계를 반환합니다."""
-        # TODO: cache_dir, cached_items, total_size_mb, hits, misses, hit_rate_percent를 딕셔너리로 반환한다
-        total = self._hits + self._misses
-        hit_rate = (self._hits / total * 100) if total > 0 else 0.0
-        cached_files = list(self.cache_dir.glob("*.pkl"))
-        total_size_mb = sum(f.stat().st_size for f in cached_files) / (1024 * 1024)
-
-        return {
-            "cache_dir": str(self.cache_dir),
-            "cached_items": len(cached_files),
-            "total_size_mb": round(total_size_mb, 2),
-            "hits": self._hits,
-            "misses": self._misses,
-            "hit_rate_percent": round(hit_rate, 2),
-        }
+        return embedding_cache_stats(self)
 
 
 # --- 싱글톤 인스턴스 ---
@@ -185,4 +111,3 @@ response_cache = ResponseCache(
     ttl=int(os.getenv("CACHE_TTL", str(DEFAULT_RESPONSE_TTL))),
     max_size=int(os.getenv("CACHE_MAX_SIZE", str(DEFAULT_RESPONSE_CACHE_MAX_SIZE))),
 )
-

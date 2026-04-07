@@ -5,8 +5,6 @@ import os
 import time
 
 from dotenv import load_dotenv
-from langchain.agents import AgentExecutor, create_tool_calling_agent
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 from .cache import response_cache
 from .monitoring import langfuse_monitor, token_tracker
@@ -14,16 +12,11 @@ from .tools import get_leave_balance, get_sales_sum, list_employees, search_docu
 from .router import QueryRouter
 from .llm_factory import build_llm
 from .agent_helpers import build_rag_chain, classify_route
+from ._agent_utils import build_agent_executor, run_with_retry
 
 load_dotenv()
 
 logger = logging.getLogger(__name__)
-
-# --- 설정 상수 ---
-AGENT_MAX_ITERATIONS = 10   # Agent 최대 반복 횟수
-AGENT_TIMEOUT_SECONDS = 60  # Agent 실행 최대 대기 시간 (초)
-RETRY_MAX_ATTEMPTS = 3      # 최대 재시도 횟수
-RETRY_DELAY_SECONDS = 2.0   # 재시도 간격 (초)
 
 # --- 시스템 프롬프트 ---
 SYSTEM_PROMPT = """당신은 사내 AI 비서입니다.
@@ -58,7 +51,7 @@ class ConnectHRAgent:
         self.tools = [list_employees, get_leave_balance, get_sales_sum, search_documents]
         self.rag_chain = build_rag_chain(self.llm)
 
-        self.agent_executor = self._build_agent_executor()
+        self.agent_executor = build_agent_executor(self.llm, self.tools, SYSTEM_PROMPT)
 
         logger.info(
             "[ConnectHRAgent] 초기화 완료 (도구 수: %d, RAG 체인: %s)",
@@ -66,72 +59,12 @@ class ConnectHRAgent:
             "활성" if self.rag_chain else "비활성",
         )
 
-    def _build_agent_executor(self):
-        """AgentExecutor를 구성합니다."""
-        try:
-            # TODO: 프롬프트 템플릿을 정의한다 (system + chat_history + input + agent_scratchpad)
-            prompt = ChatPromptTemplate.from_messages([
-                ("system", SYSTEM_PROMPT),
-                MessagesPlaceholder(variable_name="chat_history", optional=True),
-                ("human", "{input}"),
-                MessagesPlaceholder(variable_name="agent_scratchpad"),
-            ])
-
-            # TODO: Tool Calling Agent를 생성한다
-            agent = create_tool_calling_agent(self.llm, self.tools, prompt)
-
-            # TODO: AgentExecutor를 래핑한다 (운영 설정: max_iterations, timeout, 중간 단계 반환 포함)
-            executor = AgentExecutor(
-                agent=agent,
-                tools=self.tools,
-                max_iterations=AGENT_MAX_ITERATIONS,
-                max_execution_time=AGENT_TIMEOUT_SECONDS,
-                handle_parsing_errors=True,
-                return_intermediate_steps=True,
-                verbose=True,
-            )
-
-            logger.info("[ConnectHRAgent] AgentExecutor 구성 완료")
-            return executor
-
-        except Exception as exc:
-            logger.error("[ConnectHRAgent] AgentExecutor 구성 실패: %s", exc)
-            return None
-
-    def _run_with_retry(self, query, chat_history=None):
-        """재시도 로직이 포함된 Agent 실행 메서드."""
-        # TODO: RETRY_MAX_ATTEMPTS만큼 반복하며 agent_executor.invoke()를 시도한다
-        # TODO: 성공하면 결과를 반환한다
-        # TODO: 실패하면 RETRY_DELAY_SECONDS만큼 대기 후 재시도한다
-        # TODO: 모든 재시도 실패 시 에러 메시지 딕셔너리를 반환한다
-        last_error = None
-
-        for attempt in range(1, RETRY_MAX_ATTEMPTS + 1):
-            try:
-                logger.info("[Retry] 시도 %d/%d", attempt, RETRY_MAX_ATTEMPTS)
-                result = self.agent_executor.invoke({
-                    "input": query,
-                    "chat_history": chat_history or [],
-                })
-                return result
-            except Exception as exc:
-                last_error = exc
-                logger.warning("[Retry] 시도 %d 실패: %s", attempt, exc)
-                if attempt < RETRY_MAX_ATTEMPTS:
-                    time.sleep(RETRY_DELAY_SECONDS)
-
-        return {
-            "output": f"죄송합니다. {RETRY_MAX_ATTEMPTS}회 재시도 후에도 처리에 실패했습니다. ({last_error})",
-            "intermediate_steps": [],
-        }
-
     def run(self, query, chat_history=None, use_cache=True):
         """사용자 질문을 처리하고 답변을 반환합니다."""
         start_time = time.time()
-
         logger.info("[ConnectHRAgent] 질문 수신: %s", query[:80])
 
-        # TODO: ① 캐시 조회 — use_cache가 True이면 response_cache.get()으로 캐시된 응답을 확인한다
+        # ① 캐시 조회
         if use_cache:
             cached = response_cache.get(query)
             if cached is not None:
@@ -139,15 +72,11 @@ class ConnectHRAgent:
                 logger.info("[ConnectHRAgent] 캐시 응답 반환")
                 return cached
 
-        # TODO: ② Router로 경로 결정 — classify_route()로 "rag" 또는 "agent" 경로를 결정한다
+        # ② Router로 경로 결정
         route = classify_route(query, router=self._router)
 
-        # TODO: ③ 경로별 실행
-        #   - "rag" 경로이고 rag_chain이 있으면 → rag_chain.invoke()로 문서 검색 응답 생성
-        #   - RAG 실패 시 → _run_with_retry()로 Agent 폴백
-        #   - 그 외 → _run_with_retry()로 Agent 실행
+        # ③ 경로별 실행
         if route == "rag" and self.rag_chain is not None:
-            # 비정형 문서 검색 경로
             try:
                 answer = self.rag_chain.invoke(query)
                 result = {
@@ -158,12 +87,11 @@ class ConnectHRAgent:
                 }
             except Exception as exc:
                 logger.warning("[ConnectHRAgent] RAG 체인 실행 실패, Agent로 폴백: %s", exc)
-                result = self._run_with_retry(query, chat_history)
+                result = run_with_retry(self.agent_executor, query, chat_history)
                 result["route"] = "agent_fallback"
                 result["from_cache"] = False
         elif self.agent_executor is not None:
-            # DB 조회 또는 복합 경로 → Agent 실행
-            result = self._run_with_retry(query, chat_history)
+            result = run_with_retry(self.agent_executor, query, chat_history)
             result["route"] = route
             result["from_cache"] = False
         else:
@@ -174,7 +102,7 @@ class ConnectHRAgent:
                 "from_cache": False,
             }
 
-        # TODO: ④ 토큰 사용량 기록 — token_tracker.record()로 모델, 토큰 수, 지연시간 기록
+        # ④ 토큰 사용량 기록
         latency_ms = (time.time() - start_time) * 1000
         provider = os.getenv("LLM_PROVIDER", "ollama").lower()
         if provider == "openai":
@@ -183,13 +111,13 @@ class ConnectHRAgent:
             model = os.getenv("OLLAMA_MODEL", "deepseek-r1:8b")
         token_tracker.record(
             model=model,
-            input_tokens=len(query.split()) * 2,  # 추정값
-            output_tokens=len(result["output"].split()) * 2,  # 추정값
+            input_tokens=len(query.split()) * 2,
+            output_tokens=len(result["output"].split()) * 2,
             operation="agent_run",
             latency_ms=latency_ms,
         )
 
-        # TODO: ⑤ Langfuse 추적 전송 — langfuse_monitor.trace()로 입출력 및 메타데이터 전송
+        # ⑤ Langfuse 추적 전송
         langfuse_monitor.trace(
             name="agent_run",
             input_data=query,
@@ -197,11 +125,10 @@ class ConnectHRAgent:
             metadata={"route": result["route"], "latency_ms": latency_ms},
         )
 
-        # TODO: ⑥ 캐시 저장 — use_cache가 True이면 response_cache.set()으로 응답 캐시
+        # ⑥ 캐시 저장
         if use_cache:
             response_cache.set(query, result)
 
-        # TODO: 처리 완료 로그 출력 후 result를 반환한다
         logger.info(
             "[ConnectHRAgent] 처리 완료 (경로: %s, 소요: %.0fms)",
             result["route"],
