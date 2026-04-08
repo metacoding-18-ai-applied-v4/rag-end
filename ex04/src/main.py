@@ -38,8 +38,6 @@ DEFAULT_DOCS_DIR = str(BASE_DIR / "data" / "docs")
 DEFAULT_MARKDOWN_DIR = str(BASE_DIR / "data" / "markdown")
 
 
-
-
 def step1_python_parsing(docs_dir: str) -> list[dict]:
     """Step 1: Python 라이브러리로 문서 텍스트를 추출합니다.
 
@@ -58,23 +56,9 @@ def step1_python_parsing(docs_dir: str) -> list[dict]:
     Returns:
         문서 추출 결과 딕셔너리 리스트
     """
-    print("\n" + "=" * 60)
-    print("  📝 Step 1: Python 파싱 — 형식별 텍스트 추출")
-    print("=" * 60)
-    print(f"  📁 문서 디렉토리: {_rel_path(docs_dir)}\n")
-
     # TODO: extract_all_from_directory()로 문서 추출 → 결과 출력 → 마크다운 저장
-    start_time = time.time()
     results = extract_all_from_directory(docs_dir)
-    elapsed = time.time() - start_time
-
-    print(f"\n  ✅ Step 1 완료: {len(results)}개 문서 추출 ({elapsed:.1f}초)")
-
-    # 마크다운 파일 저장
-    print("\n  [마크다운 변환]")
     save_results_as_markdown(results)
-    print(f"    📁 저장 위치: data/markdown/")
-
     return results
 
 
@@ -102,35 +86,14 @@ def step2_embed_and_store(
     Returns:
         store_chunks_to_chroma() 반환값 딕셔너리
     """
-    print("\n" + "=" * 60)
-    print("  ✂️  Step 2: 청킹 + 임베딩 + ChromaDB 저장")
-    print("=" * 60)
-    print(f"  📐 청크 크기: {chunk_size}자, 오버랩: {overlap}자")
-    print(f"  🧮 임베딩 모델: {embedding_model_name}")
-    print(f"  💾 ChromaDB: {_rel_path(chroma_dir)}\n")
-
     # TODO: chunk_all_documents()로 청킹 → store_chunks_to_chroma()로 ChromaDB 저장
-    print("  ✂️  청킹 중...")
     all_chunks = chunk_all_documents(python_results, chunk_size, overlap)
-
-    if not all_chunks:
-        print("  ❌ 생성된 청크가 없습니다. 문서가 비어 있는지 확인하십시오.")
-        sys.exit(1)
-
-    start_time = time.time()
     store_result = store_chunks_to_chroma(
         chunks=all_chunks,
         chroma_dir=chroma_dir,
         collection_name=collection_name,
         embedding_model_name=embedding_model_name,
     )
-    elapsed = time.time() - start_time
-
-    print(f"\n  ✅ Step 2 완료 ({elapsed:.1f}초)")
-    print(f"    📊 청크 수: {store_result['total_chunks']}개")
-    print(f"    📦 컬렉션 문서 수: {store_result['collection_count']}개")
-    print(f"    💾 ChromaDB: {_rel_path(store_result['chroma_dir'])}")
-
     return store_result
 
 
@@ -145,13 +108,6 @@ def main() -> None:
 
     steps_to_run = sorted(set(args.step))
 
-    print("\n" + "=" * 60)
-    print("  🚀 사내 AI 비서 VectorDB 구축 파이프라인")
-    print("=" * 60)
-    print(f"  📁 문서: {_rel_path(args.docs_dir)}")
-
-    pipeline_start = time.time()
-
     python_results: list[dict] = []
 
     # TODO: 1 in steps_to_run이면 step1_python_parsing 실행
@@ -160,11 +116,8 @@ def main() -> None:
 
     # TODO: 2 in steps_to_run이면 step2_embed_and_store 실행
     if 2 in steps_to_run:
-        # Step 1 결과 없이 Step 2만 실행하려면 파싱 먼저 수행
         if not python_results:
-            print("\nStep 2 실행 전 문서 파싱이 필요합니다. Step 1을 자동으로 실행합니다.")
             python_results = step1_python_parsing(docs_dir=args.docs_dir)
-
         step2_embed_and_store(
             python_results=python_results,
             chroma_dir=args.chroma_dir,
@@ -173,16 +126,6 @@ def main() -> None:
             chunk_size=args.chunk_size,
             overlap=args.overlap,
         )
-
-    # TODO: 총 소요 시간 출력 + 다음 단계(cli_search.py) 안내
-    total_elapsed = time.time() - pipeline_start
-    print("\n" + "=" * 60)
-    print(f"  ✅ 파이프라인 완료! ({total_elapsed:.1f}초)")
-    print("=" * 60)
-
-    if 2 in steps_to_run:
-        print("\n  💡 다음 단계: CLI 검색으로 품질을 검증하십시오.")
-        print("     python src/cli_search.py --query '연차 사용 규정'")
 
 
 if __name__ == "__main__":
