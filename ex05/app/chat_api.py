@@ -5,8 +5,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from app.session import get_session_id, set_session_cookie
-from src.session_manager import get_conversation_manager
-from src.rag_chain import get_rag_chain
+from src.session_manager import get_conversation_manager, get_rag_chain
 from src.response_parser import build_response
 
 class ChatRequest(BaseModel):

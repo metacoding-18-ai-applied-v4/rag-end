@@ -83,3 +83,18 @@ def get_conversation_manager():
     if _conversation_manager is None:
         _conversation_manager = ConversationManager()
     return _conversation_manager
+
+
+# RAG 체인 싱글턴 캐시
+_rag_chain_cache = None
+_retriever_cache = None
+
+
+def get_rag_chain():
+    """RAG 체인과 Retriever 싱글턴 인스턴스를 반환한다."""
+    from src.rag_chain import build_rag_chain  # 순환 import 방지
+
+    global _rag_chain_cache, _retriever_cache
+    if _rag_chain_cache is None:
+        _rag_chain_cache, _retriever_cache = build_rag_chain()
+    return _rag_chain_cache, _retriever_cache

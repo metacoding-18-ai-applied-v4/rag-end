@@ -74,16 +74,3 @@ def build_rag_chain():
 
     # 5. 체인과 검색기를 함께 반환
     return chain, retriever
-
-
-# 싱글턴 캐시 (앱 시작 시 1회만 초기화)
-_rag_chain_cache = None
-_retriever_cache = None
-
-
-def get_rag_chain():
-    """RAG 체인과 Retriever 싱글턴 인스턴스를 반환한다."""
-    global _rag_chain_cache, _retriever_cache
-    if _rag_chain_cache is None:
-        _rag_chain_cache, _retriever_cache = build_rag_chain()
-    return _rag_chain_cache, _retriever_cache
