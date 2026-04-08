@@ -36,7 +36,7 @@ RAG_HUMAN_PROMPT = "질문: {question}"
 
 def _format_docs(docs):
     """검색된 Document 목록을 프롬프트에 삽입할 텍스트 형식으로 변환한다."""
-    # TODO: 각 Document에서 source, page 메타데이터와 page_content를 꺼내어
+    # TODO: 검색된 Document를 "[문서 N] 출처: ..." 텍스트로 변환
     #       "[문서 N] 출처: source (p.page)\n내용" 형식의 텍스트로 조합
     parts = []
     for i, doc in enumerate(docs, start=1):
