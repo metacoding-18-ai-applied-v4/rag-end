@@ -68,7 +68,7 @@ def step1_python_parsing(docs_dir: str) -> list[dict]:
     print("=" * 60)
     print(f"  📁 문서 디렉토리: {_rel_path(docs_dir)}\n")
 
-    # === PROCESS ===
+    # TODO: extract_all_from_directory()로 문서 추출 → 결과 출력 → 마크다운 저장
     start_time = time.time()
     results = extract_all_from_directory(docs_dir)
     elapsed = time.time() - start_time
@@ -115,7 +115,7 @@ def step2_embed_and_store(
     print(f"  🧮 임베딩 모델: {embedding_model_name}")
     print(f"  💾 ChromaDB: {_rel_path(chroma_dir)}\n")
 
-    # === PROCESS: 청킹 ===
+    # TODO: chunk_all_documents()로 청킹 → store_chunks_to_chroma()로 ChromaDB 저장
     print("  ✂️  청킹 중...")
     all_chunks = chunk_all_documents(python_results, chunk_size, overlap)
 
@@ -162,11 +162,11 @@ def main() -> None:
 
     python_results: list[dict] = []
 
-    # === PROCESS: Step 1 — Python 파싱 ===
+    # TODO: 1 in steps_to_run이면 step1_python_parsing 실행
     if 1 in steps_to_run:
         python_results = step1_python_parsing(docs_dir=args.docs_dir)
 
-    # === PROCESS: Step 2 — 청킹 + 임베딩 + ChromaDB 저장 ===
+    # TODO: 2 in steps_to_run이면 step2_embed_and_store 실행
     if 2 in steps_to_run:
         # Step 1 결과 없이 Step 2만 실행하려면 파싱 먼저 수행
         if not python_results:
@@ -182,7 +182,7 @@ def main() -> None:
             overlap=args.overlap,
         )
 
-    # === OUTPUT: 파이프라인 완료 요약 ===
+    # TODO: 총 소요 시간 출력 + 다음 단계(cli_search.py) 안내
     total_elapsed = time.time() - pipeline_start
     print("\n" + "=" * 60)
     print(f"  ✅ 파이프라인 완료! ({total_elapsed:.1f}초)")

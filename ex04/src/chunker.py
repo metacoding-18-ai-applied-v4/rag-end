@@ -53,7 +53,7 @@ def split_text_into_chunks(
     if not text:
         return []
 
-    # === PROCESS ===
+    # TODO: chunk_size 단위로 텍스트를 자르되, overlap만큼 겹치게 합니다
     chunks = []
     step = chunk_size - overlap  # 다음 청크 시작 위치 이동 단계
     start = 0

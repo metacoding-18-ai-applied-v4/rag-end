@@ -49,7 +49,7 @@ def run_single_query(
     print(f"  📊 상위 {top_k}개 결과를 검색합니다")
     print(SEPARATOR)
 
-    # === PROCESS ===
+    # TODO: search_chroma()로 검색 실행 → 결과를 print_search_result()로 출력
     try:
         results = search_chroma(
             query=query,
@@ -99,7 +99,7 @@ def run_interactive_mode(
     print("  💡 종료: quit / exit / q")
     print(SEPARATOR)
 
-    # 임베딩 모델을 미리 로드하여 반복 검색 시 속도 향상
+    # TODO: while 루프로 input() 반복 → run_single_query() 호출
     print("  ⏳ 임베딩 모델 로드 중... (최초 1회)")
 
     while True:
@@ -143,7 +143,7 @@ def main() -> None:
         print("  python src/main.py")
         sys.exit(1)
 
-    # === PROCESS ===
+    # TODO: 단일 쿼리 모드 — run_single_query() 호출
     if args.query:
         run_single_query(
             query=args.query,

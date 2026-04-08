@@ -57,7 +57,7 @@ def store_chunks_to_chroma(
 
     chroma_dir = str(Path(chroma_dir).resolve())
 
-    # === PROCESS: Step 1 — 임베딩 모델 로드 ===
+    # TODO: 위 4단계를 순서대로 구현합니다
     model = load_embedding_model(embedding_model_name)
 
     # === PROCESS: Step 2 — ChromaDB 초기화 ===
@@ -141,7 +141,7 @@ def search_chroma(
         print("main.py를 먼저 실행하여 문서를 색인하십시오.")
         sys.exit(1)
 
-    # === PROCESS ===
+    # TODO: 쿼리 임베딩 → collection.query() → 결과 정리
     model = load_embedding_model(embedding_model_name)
     query_embedding = model.encode(
         [query], normalize_embeddings=True
