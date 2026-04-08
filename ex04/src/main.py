@@ -57,7 +57,9 @@ def step1_python_parsing(docs_dir: str) -> list[dict]:
         문서 추출 결과 딕셔너리 리스트
     """
     # TODO: extract_all_from_directory()로 문서 추출 → 결과 출력 → 마크다운 저장
+    # 1. docs_dir(data/docs/) 안의 PDF/DOCX/XLSX를 한꺼번에 파싱
     results = extract_all_from_directory(docs_dir)
+    # 2. 파싱 결과를 data/markdown/에 .md 파일로 저장 (눈으로 확인용)
     save_results_as_markdown(results)
     return results
 
@@ -87,7 +89,9 @@ def step2_embed_and_store(
         store_chunks_to_chroma() 반환값 딕셔너리
     """
     # TODO: chunk_all_documents()로 청킹 → store_chunks_to_chroma()로 ChromaDB 저장
+    # 1. 파싱 결과를 500자+100자 오버랩으로 청킹
     all_chunks = chunk_all_documents(python_results, chunk_size, overlap)
+    # 2. 청크를 임베딩하여 ChromaDB에 저장
     store_result = store_chunks_to_chroma(
         chunks=all_chunks,
         chroma_dir=chroma_dir,

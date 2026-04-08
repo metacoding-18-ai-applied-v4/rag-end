@@ -58,16 +58,22 @@ def store_chunks_to_chroma(
     chroma_dir = str(Path(chroma_dir).resolve())
 
     # TODO: 위 4단계를 순서대로 구현합니다
+
+    # 1. ko-sroberta 임베딩 모델 로드 (최초 실행 시 ~400MB 다운로드, 이후 캐시)
     model = load_embedding_model(embedding_model_name)
 
+    # 2. ChromaDB 클라이언트 생성 — 디스크에 영속 저장 (프로그램 종료해도 유지)
     client = chromadb.PersistentClient(
         path=chroma_dir,
         settings=Settings(anonymized_telemetry=False),
     )
+    # 컬렉션이 없으면 생성, 있으면 기존 컬렉션 반환. cosine 유사도 사용
     collection = get_or_create_collection(client, collection_name)
 
+    # 3. 청크 텍스트를 768차원 벡터로 변환 + ChromaDB용 데이터 정리
     ids, documents, embeddings, metadatas = embed_chunks(chunks, model)
 
+    # 4. 배치 단위로 upsert — 같은 ID가 있으면 덮어쓰기 (중복 방지)
     for batch_start in range(0, len(ids), BATCH_SIZE):
         batch_end = batch_start + BATCH_SIZE
         collection.upsert(
@@ -124,21 +130,26 @@ def search_chroma(
         sys.exit(1)
 
     # TODO: 쿼리 임베딩 → collection.query() → 결과 정리
+
+    # 질문 텍스트를 벡터로 변환 (저장할 때와 같은 모델 사용)
     model = load_embedding_model(embedding_model_name)
     query_embedding = model.encode([query], normalize_embeddings=True).tolist()
 
+    # 저장된 ChromaDB를 열고 컬렉션 가져오기
     client = chromadb.PersistentClient(
         path=str(chroma_dir_path.resolve()),
         settings=Settings(anonymized_telemetry=False),
     )
     collection = client.get_collection(name=collection_name)
 
+    # 3. 쿼리 벡터와 가장 가까운 청크 top_k개 검색
     results = collection.query(
         query_embeddings=query_embedding,
         n_results=top_k,
         include=["documents", "distances", "metadatas"],
     )
 
+    # 4. 검색 결과를 순위별 딕셔너리 리스트로 정리
     search_results = []
     docs = results.get("documents", [[]])[0]
     dists = results.get("distances", [[]])[0]
