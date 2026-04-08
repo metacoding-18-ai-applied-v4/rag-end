@@ -83,8 +83,6 @@ _retriever_cache = None
 
 def get_rag_chain():
     """RAG 체인과 Retriever 싱글턴 인스턴스를 반환한다."""
-    # TODO: 캐시가 비어 있으면 build_rag_chain()으로 초기화 후 반환
-    # 1. 최초 호출 시 체인 생성, 이후 캐시 재사용
     global _rag_chain_cache, _retriever_cache
     if _rag_chain_cache is None:
         _rag_chain_cache, _retriever_cache = build_rag_chain()
