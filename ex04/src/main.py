@@ -38,11 +38,6 @@ DEFAULT_DOCS_DIR = str(BASE_DIR / "data" / "docs")
 DEFAULT_MARKDOWN_DIR = str(BASE_DIR / "data" / "markdown")
 
 
-# =====================================================================
-# === INPUT ===
-# docs_dir: 문서 디렉토리 경로 (data/docs/)
-# steps: 실행할 Step 번호 리스트 ([1], [2], [1,2])
-# =====================================================================
 
 
 def step1_python_parsing(docs_dir: str) -> list[dict]:
@@ -73,7 +68,6 @@ def step1_python_parsing(docs_dir: str) -> list[dict]:
     results = extract_all_from_directory(docs_dir)
     elapsed = time.time() - start_time
 
-    # === OUTPUT ===
     print(f"\n  ✅ Step 1 완료: {len(results)}개 문서 추출 ({elapsed:.1f}초)")
 
     # 마크다운 파일 저장
@@ -123,7 +117,6 @@ def step2_embed_and_store(
         print("  ❌ 생성된 청크가 없습니다. 문서가 비어 있는지 확인하십시오.")
         sys.exit(1)
 
-    # === PROCESS: ChromaDB 저장 ===
     start_time = time.time()
     store_result = store_chunks_to_chroma(
         chunks=all_chunks,
@@ -133,7 +126,6 @@ def step2_embed_and_store(
     )
     elapsed = time.time() - start_time
 
-    # === OUTPUT ===
     print(f"\n  ✅ Step 2 완료 ({elapsed:.1f}초)")
     print(f"    📊 청크 수: {store_result['total_chunks']}개")
     print(f"    📦 컬렉션 문서 수: {store_result['collection_count']}개")
