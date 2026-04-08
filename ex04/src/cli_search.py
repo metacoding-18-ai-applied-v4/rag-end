@@ -50,29 +50,15 @@ def run_single_query(
     print(SEPARATOR)
 
     # TODO: search_chroma()로 검색 실행 → 결과를 print_search_result()로 출력
-    try:
-        results = search_chroma(
-            query=query,
-            chroma_dir=chroma_dir,
-            collection_name=collection_name,
-            embedding_model_name=embedding_model_name,
-            top_k=top_k,
-        )
-    except Exception as e:
-        print(f"\n  ❌ 검색 중 오류가 발생했습니다: {e}")
-        return
-
-    if not results:
-        print("  ⚠️  관련 문서를 찾지 못했습니다.")
-        return
-
-    # === OUTPUT ===
+    results = search_chroma(
+        query=query,
+        chroma_dir=chroma_dir,
+        collection_name=collection_name,
+        embedding_model_name=embedding_model_name,
+        top_k=top_k,
+    )
     for result in results:
         print_search_result(result)
-
-    print(f"\n{SEPARATOR}")
-    print(f"  ✅ 총 {len(results)}개 결과 반환 완료")
-    print(SEPARATOR)
 
 
 def run_interactive_mode(
@@ -143,8 +129,8 @@ def main() -> None:
         print("  python src/main.py")
         sys.exit(1)
 
-    # TODO: 단일 쿼리 모드 — run_single_query() 호출
     if args.query:
+        # TODO: 단일 쿼리 모드 — run_single_query() 호출
         run_single_query(
             query=args.query,
             top_k=args.top_k,
@@ -153,6 +139,7 @@ def main() -> None:
             embedding_model_name=args.embedding_model,
         )
     else:
+        # TODO: 대화형 반복 검색 모드 — run_interactive_mode() 호출
         run_interactive_mode(
             top_k=args.top_k,
             chroma_dir=args.chroma_dir,
