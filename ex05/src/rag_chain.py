@@ -48,21 +48,18 @@ def _format_docs(docs):
 
 def build_rag_chain():
     """LCEL 파이프 연산자(|)로 RAG 체인과 Retriever를 조립하여 반환한다."""
-    # TODO: build_llm()으로 LLM 생성
+    # TODO: build_llm()으로 LLM 생성 ~ (chain, retriever) 튜플 반환
     # 1. LLM 인스턴스 생성 (llm_factory.py에서 Ollama/OpenAI 선택)
     llm = build_llm()
-    # TODO: build_retriever()로 Retriever 생성
     # 2. ChromaDB에서 문서를 검색하는 Retriever 생성
     retriever = build_retriever()
 
-    # TODO: ChatPromptTemplate 구성 (RAG_SYSTEM_PROMPT + RAG_HUMAN_PROMPT)
     # 3. 시스템 프롬프트 + 사용자 프롬프트 조립
     prompt = ChatPromptTemplate.from_messages([
         ("system", RAG_SYSTEM_PROMPT),
         ("human", RAG_HUMAN_PROMPT),
     ])
 
-    # TODO: LCEL 파이프로 체인 조립
     # 4. LCEL 파이프로 체인 조립 — 질문→검색→포맷→프롬프트→LLM→텍스트 추출
     chain = (
         {
@@ -75,7 +72,6 @@ def build_rag_chain():
         | StrOutputParser()
     )
 
-    # TODO: (chain, retriever) 튜플 반환
     # 5. 체인과 검색기를 함께 반환
     return chain, retriever
 
