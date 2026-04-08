@@ -20,7 +20,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 from _search_utils import (
-    format_distance_as_similarity,
     print_search_result,
     parse_arguments,
     SEPARATOR,

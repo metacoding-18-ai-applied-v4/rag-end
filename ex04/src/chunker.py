@@ -3,24 +3,11 @@
 CH04 핵심: Fixed-size 청킹 (500자 + 100자 오버랩)
 """
 
-from _chunk_utils import (
-    build_text_chunk,
-    build_image_caption_chunk,
-    make_doc_id,
-    chunk_extract_result,
-    chunk_all_documents,
-)
+from _chunk_utils import chunk_all_documents
 
 # 기본 청킹 파라미터
 DEFAULT_CHUNK_SIZE = 500
 DEFAULT_OVERLAP = 100
-
-# 이 함수들은 _chunk_utils.py에서 가져옵니다 (완성 코드)
-# - build_text_chunk: 청크 + 메타데이터 결합
-# - build_image_caption_chunk: 이미지 캡션 청크 생성
-# - make_doc_id: 파일명 → 문서 ID 생성
-# - chunk_extract_result: 추출 결과 → 청크 리스트
-# - chunk_all_documents: 여러 문서 일괄 청킹
 
 
 def split_text_into_chunks(
