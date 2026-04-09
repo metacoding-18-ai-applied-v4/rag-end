@@ -87,21 +87,30 @@ class IntegratedAgent:
         if self._agent_executor is None:
             return fallback_response(self._llm, query, query_type)
 
-        result = self._agent_executor.invoke({"input": query})
-        answer = result.get("output", "답변을 생성하지 못했습니다.")
-        steps = result.get("intermediate_steps", [])
+        try:
+            result = self._agent_executor.invoke({"input": query})
+            answer = result.get("output", "답변을 생성하지 못했습니다.")
+            steps = result.get("intermediate_steps", [])
 
-        # 3. DeepSeek-R1 <think> 태그 제거
-        answer = clean_think_tags(answer)
+            # 3. DeepSeek-R1 <think> 태그 제거
+            answer = clean_think_tags(answer)
 
-        # 4. 중간 단계에서 정형/비정형 데이터 추출
-        structured_data, unstructured_data = parse_agent_result(steps)
+            # 4. 중간 단계에서 정형/비정형 데이터 추출
+            structured_data, unstructured_data = parse_agent_result(steps)
 
-        # 5. 결과 딕셔너리 반환
-        return {
-            "answer": answer,
-            "query_type": query_type,
-            "structured_data": structured_data,
-            "unstructured_data": unstructured_data,
-            "steps": serialize_steps(steps),
-        }
+            # 5. 결과 딕셔너리 반환
+            return {
+                "answer": answer,
+                "query_type": query_type,
+                "structured_data": structured_data,
+                "unstructured_data": unstructured_data,
+                "steps": serialize_steps(steps),
+            }
+        except Exception as e:
+            return {
+                "answer": f"처리 중 오류가 발생했습니다: {e}",
+                "query_type": query_type,
+                "structured_data": {},
+                "unstructured_data": [],
+                "steps": [],
+            }
