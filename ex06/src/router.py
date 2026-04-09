@@ -132,7 +132,7 @@ class QueryRouter:
 
         반드시 JSON 형식으로만 답하세요:
         {{"route": "structured|unstructured|hybrid", "reason": "한 줄 근거"}}"""
-        # TODO: _step3_llm_based — LLM에게 질문 분류 위임
+        
         # 1. LLM에 질문 분류 요청
         response = self._llm.invoke(prompt)
         content = response.content if hasattr(response, "content") else str(response)

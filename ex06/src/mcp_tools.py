@@ -133,7 +133,7 @@ def search_documents(query: str, k: int = 3) -> dict:
             # 2. 벡터 검색 수행
             results = collection.query(query_texts=[query], n_results=k)
 
-            # 3. 결과 가공 (content, source, score)
+            # 3. 결과를 content/source/score 형태로 가공
             docs = []
             for i, doc in enumerate(results["documents"][0]):
                 docs.append({

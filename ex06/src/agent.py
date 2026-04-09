@@ -50,7 +50,7 @@ class IntegratedAgent:
             from langchain.agents import AgentExecutor, create_tool_calling_agent
             from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
-            # TODO: __init__ — 프롬프트 + Agent + Executor 조립
+            # TODO: _build_agent_executor — 프롬프트 + Agent + Executor 조립
 
             # 1. 프롬프트 구성 (system + history + input + scratchpad)
             prompt = ChatPromptTemplate.from_messages([
