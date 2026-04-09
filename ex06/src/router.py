@@ -56,28 +56,28 @@ class QueryRouter:
 
     def classify_query(self, query):
         """질문을 분석하여 처리 경로를 반환한다."""
+        # 1. 규칙 기반 키워드 매칭
         # TODO: Step 1 — 규칙 기반 키워드 매칭을 시도한다
-        # ① Step 1: 규칙 기반 키워드 매칭
-        step1_result = self._step1_rule_based(query)  # ①
+        step1_result = self._step1_rule_based(query)
         if step1_result is not None:
             return step1_result
 
+        # 2. DB 스키마 컬럼명 매칭
         # TODO: Step 2 — DB 스키마 컬럼명 매칭을 시도한다
-        # ② Step 2: DB 스키마 컬럼명 매칭
-        step2_result = self._step2_schema_based(query)  # ②
+        step2_result = self._step2_schema_based(query)
         if step2_result is not None:
             return step2_result
 
+        # 3. LLM 판단 (폴백)
         # TODO: Step 3 — LLM 판단 (폴백)을 시도한다
-        # ③ Step 3: LLM 판단 (폴백)
         if self._llm is not None:
-            step3_result = self._step3_llm_based(query)  # ③
+            step3_result = self._step3_llm_based(query)
             if step3_result is not None:
                 return step3_result
 
+        # 4. 기본값: 비정형으로 처리
         # TODO: 기본값 — 모든 단계에서 결정되지 않으면 "unstructured"를 반환한다
-        # ④ 기본값: 비정형으로 처리
-        return "unstructured"  # ④
+        return "unstructured"
 
     # ------------------------------------------------------------------
     # 3. 내부 구현 메서드
@@ -85,6 +85,7 @@ class QueryRouter:
 
     def _step1_rule_based(self, query):
         """규칙 기반 키워드 매칭으로 경로를 결정한다."""
+        # 1. STRUCTURED/UNSTRUCTURED 키워드 히트 수 계산
         # TODO: STRUCTURED_KEYWORDS와 UNSTRUCTURED_KEYWORDS 각각의 히트 수를 센다
         query_lower = query.lower()
 
@@ -95,8 +96,8 @@ class QueryRouter:
             1 for kw in UNSTRUCTURED_KEYWORDS if kw in query_lower
         )
 
+        # 2. 양쪽 모두 히트 시
         # TODO: 양쪽 모두 히트 시 — 한 쪽이 2배 이상 우세하면 그 쪽, 아니면 "hybrid"
-        # 두 쪽 모두 히트 → hybrid (단, 한 쪽이 2배 이상 우세하면 그 쪽으로 분류)
         if structured_hits > 0 and unstructured_hits > 0:
             if structured_hits > unstructured_hits * 2:
                 return "structured"
@@ -104,6 +105,7 @@ class QueryRouter:
                 return "unstructured"
             return "hybrid"
 
+        # 3. 한 쪽만 히트 시
         # TODO: 한 쪽만 히트 시 — 해당 경로 반환
         if structured_hits > 0:
             return "structured"

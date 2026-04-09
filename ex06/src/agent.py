@@ -50,8 +50,8 @@ class IntegratedAgent:
             from langchain.agents import AgentExecutor, create_tool_calling_agent
             from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
+            # 1. 프롬프트 구성 (system + history + input + scratchpad)
             # TODO: 프롬프트 구성 (system + history + input + scratchpad)
-            # ① 프롬프트 구성 (system + history + input + scratchpad)
             prompt = ChatPromptTemplate.from_messages([
                 ("system", SYSTEM_PROMPT),
                 MessagesPlaceholder(variable_name="chat_history", optional=True),
@@ -59,16 +59,16 @@ class IntegratedAgent:
                 MessagesPlaceholder(variable_name="agent_scratchpad"),
             ])
 
+            # 2. Tool Calling Agent 생성
             # TODO: Tool Calling Agent 생성
-            # ② Tool Calling Agent 생성
             agent = create_tool_calling_agent(
                 llm=self._llm,
                 tools=ALL_TOOLS,
                 prompt=prompt,
             )
 
+            # 3. AgentExecutor 래핑 (중간 단계 반환 활성화)
             # TODO: AgentExecutor 래핑 (중간 단계 반환 활성화)
-            # ③ AgentExecutor 래핑 (중간 단계 반환 활성화)
             return AgentExecutor(
                 agent=agent,
                 tools=ALL_TOOLS,
@@ -83,29 +83,30 @@ class IntegratedAgent:
 
     def run(self, query):
         """질문을 처리하고 통합 응답을 반환한다."""
+        # 1. 질문 유형 분류 (라우터 활용)
         # TODO: 질문 유형을 분류한다 (router.classify_query)
-        # ① 질문 유형 분류
-        query_type = self._router.classify_query(query)  # ①
+        query_type = self._router.classify_query(query)
 
+        # 2. 에이전트 실행
         # TODO: agent_executor가 없으면 폴백 응답을 반환한다
-        # ② 에이전트 실행
         if self._agent_executor is None:
             return fallback_response(self._llm, query, query_type)
 
         try:
             # TODO: agent_executor.invoke()로 에이전트를 실행한다
-            result = self._agent_executor.invoke({"input": query})  # ②
+            result = self._agent_executor.invoke({"input": query})
             answer = result.get("output", "답변을 생성하지 못했습니다.")
             steps = result.get("intermediate_steps", [])
 
+            # 3. DeepSeek-R1 <think> 태그 제거
             # TODO: 응답에서 <think> 태그를 제거한다
-            # ③ DeepSeek-R1 <think> 태그 제거
-            answer = clean_think_tags(answer)  # ③
+            answer = clean_think_tags(answer)
 
+            # 4. 중간 단계에서 정형/비정형 데이터 추출
             # TODO: 중간 단계에서 정형/비정형 데이터를 추출한다
-            # ④ 중간 단계에서 정형/비정형 데이터 추출
-            structured_data, unstructured_data = parse_agent_result(steps)  # ④
+            structured_data, unstructured_data = parse_agent_result(steps)
 
+            # 5. 결과 딕셔너리 반환
             # TODO: answer, query_type, structured_data, unstructured_data, steps를 딕셔너리로 반환한다
             return {
                 "answer": answer,

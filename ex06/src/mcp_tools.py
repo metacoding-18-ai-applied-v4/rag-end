@@ -13,8 +13,8 @@ from src.db_helper import run_query, DB_ERROR_MSG, get_vectorstore, parse_and_ch
 @tool
 def leave_balance(emp_no: str) -> dict:
     """직원의 연차 잔여 일수를 조회한다."""
+    # 1. DB 조회 (사번 또는 이름)
     # TODO: emp_no가 "E"로 시작하는 사번이면 emp_no로 조회, 아니면 이름으로 LIKE 조회한다
-    # ① DB 조회 시도 (이름 또는 번호)
     if emp_no.startswith("E") and emp_no[1:].isdigit():
         rows = run_query(
             """
@@ -40,26 +40,26 @@ def leave_balance(emp_no: str) -> dict:
             (f"%{emp_no}%",),
         )
 
+    # 2. DB 결과가 있으면 반환
     # TODO: DB 결과가 있으면 첫 번째 행을 반환한다
-    # ② DB 결과가 있으면 반환
     if rows:
         return rows[0]
 
+    # 3. 결과 없으면 에러 반환
     # TODO: 결과가 없으면 에러 딕셔너리를 반환한다
-    # ③ DB 연결 실패 시 에러 반환
     return {"error": f"직원 '{emp_no}'을(를) 찾을 수 없습니다. {DB_ERROR_MSG}"}
 
 
 @tool
 def sales_sum(dept: str = "", start_date: str = "", end_date: str = "") -> dict:
     """부서별 또는 전체 매출 합계를 조회한다."""
+    # 1. 파라미터 기본값 처리
     # TODO: 파라미터 기본값 처리 (start_date 기본 "2024-11-01", end_date 기본 "2024-12-31")
-    # ① 파라미터 기본값 처리
-    start = start_date or "2024-11-01"  # ①
+    start = start_date or "2024-11-01"
     end = end_date or "2024-12-31"
 
+    # 2. DB 조회 (부서 필터 적용)
     # TODO: dept가 있으면 부서 필터를 SQL에 추가한다
-    # ② DB 조회 시도
     dept_filter = f"AND e.department LIKE '%{dept}%'" if dept else ""
     rows = run_query(
         f"""
@@ -74,8 +74,8 @@ def sales_sum(dept: str = "", start_date: str = "", end_date: str = "") -> dict:
         (start, end),
     )
 
+    # 3. DB 결과 가공
     # TODO: DB 조회 후 결과가 있으면 grand_total, record_count, top5 등으로 가공하여 반환한다
-    # ③ DB 결과 가공
     if rows:
         grand_total = sum(int(r.get("total_amount") or 0) for r in rows)
         return {
@@ -86,8 +86,8 @@ def sales_sum(dept: str = "", start_date: str = "", end_date: str = "") -> dict:
             "top5": rows[:5],
         }
 
+    # 4. 결과 없으면 에러 반환
     # TODO: 결과가 없으면 에러 딕셔너리를 반환한다
-    # ④ DB 연결 실패 시 에러 반환
     return {"error": DB_ERROR_MSG, "dept_filter": dept or "전체", "period": f"{start} ~ {end}"}
 
 
@@ -95,8 +95,8 @@ def sales_sum(dept: str = "", start_date: str = "", end_date: str = "") -> dict:
 def list_employees(dept: str = "", name: str = "") -> dict:
     """직원의 기초 정보(부서, 직급, 입사일 등) 범용 목록을 조회한다.
     특정 직원의 입사일이나 기본 정보가 궁금할 때에는 name(이름)에 직원이름을 넣어 검색한다."""
+    # 1. 조건 조립 (부서/이름 필터)
     # TODO: dept, name 조건이 있으면 WHERE절에 LIKE 조건을 추가한다
-    # ① DB 조회 시도
     conditions = []
     params = []
     sql_base = "SELECT emp_no, name, department, position, hire_date FROM employees "
@@ -115,26 +115,29 @@ def list_employees(dept: str = "", name: str = "") -> dict:
 
     rows = run_query(sql, tuple(params))
 
+    # 2. DB 결과 반환
     # TODO: DB 조회 후 결과가 있으면 employees 리스트와 count를 반환한다
-    # ② DB 결과 반환
     if rows:
         return {"employees": rows, "count": len(rows), "filter": {"dept": dept, "name": name}}
 
+    # 3. 결과 없으면 에러 반환
     # TODO: 결과가 없으면 에러 딕셔너리를 반환한다
-    # ③ DB 연결 실패 시 에러 반환
     return {"error": DB_ERROR_MSG, "employees": [], "count": 0, "dept_filter": dept or "전체"}
 
 
 @tool
 def search_documents(query: str, k: int = 3) -> dict:
     """사내 문서에서 관련 내용을 벡터 검색한다."""
+    # 1. ChromaDB 컬렉션 가져오기
     # TODO: get_vectorstore()로 컬렉션을 가져온다
     collection = get_vectorstore()
     if collection is not None:
         try:
+            # 2. 벡터 검색 수행
             # TODO: collection.query()로 벡터 검색을 수행한다
             results = collection.query(query_texts=[query], n_results=k)
 
+            # 3. 결과 가공 (content, source, score)
             # TODO: 결과를 content, source, score 형태로 가공하여 반환한다
             docs = []
             for i, doc in enumerate(results["documents"][0]):
@@ -147,6 +150,7 @@ def search_documents(query: str, k: int = 3) -> dict:
         except Exception:
             pass
 
+    # 4. 실패 시 빈 결과 반환
     # TODO: 실패 시 빈 결과를 반환한다
     return {"results": [], "total_found": 0}
 
