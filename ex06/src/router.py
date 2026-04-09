@@ -57,22 +57,26 @@ class QueryRouter:
     def classify_query(self, query):
         """질문을 분석하여 처리 경로를 반환한다."""
         # 1. 규칙 기반 키워드 매칭
+        # TODO: Step 1 — 규칙 기반 키워드 매칭을 시도한다
         step1_result = self._step1_rule_based(query)
         if step1_result is not None:
             return step1_result
 
         # 2. DB 스키마 컬럼명 매칭
+        # TODO: Step 2 — DB 스키마 컬럼명 매칭을 시도한다
         step2_result = self._step2_schema_based(query)
         if step2_result is not None:
             return step2_result
 
         # 3. LLM 판단 (폴백)
+        # TODO: Step 3 — LLM 판단 (폴백)을 시도한다
         if self._llm is not None:
             step3_result = self._step3_llm_based(query)
             if step3_result is not None:
                 return step3_result
 
         # 4. 기본값: 비정형으로 처리
+        # TODO: 기본값 — 모든 단계에서 결정되지 않으면 "unstructured"를 반환한다
         return "unstructured"
 
     # ------------------------------------------------------------------
@@ -82,6 +86,7 @@ class QueryRouter:
     def _step1_rule_based(self, query):
         """규칙 기반 키워드 매칭으로 경로를 결정한다."""
         # 1. STRUCTURED/UNSTRUCTURED 키워드 히트 수 계산
+        # TODO: STRUCTURED_KEYWORDS와 UNSTRUCTURED_KEYWORDS 각각의 히트 수를 센다
         query_lower = query.lower()
 
         structured_hits = sum(
@@ -92,6 +97,7 @@ class QueryRouter:
         )
 
         # 2. 양쪽 모두 히트 시
+        # TODO: 양쪽 모두 히트 시 — 한 쪽이 2배 이상 우세하면 그 쪽, 아니면 "hybrid"
         if structured_hits > 0 and unstructured_hits > 0:
             if structured_hits > unstructured_hits * 2:
                 return "structured"
@@ -100,22 +106,27 @@ class QueryRouter:
             return "hybrid"
 
         # 3. 한 쪽만 히트 시
+        # TODO: 한 쪽만 히트 시 — 해당 경로 반환
         if structured_hits > 0:
             return "structured"
         if unstructured_hits > 0:
             return "unstructured"
+        # TODO: 히트 없으면 None 반환
         return None
 
     def _step2_schema_based(self, query):
         """DB 스키마 컬럼명 매칭으로 경로를 결정한다."""
+        # TODO: SCHEMA_TERMS 딕셔너리를 순회하며 query에 포함된 컬럼명을 찾는다
         query_lower = query.lower()
         for term in SCHEMA_TERMS:
             if term in query_lower:
+                # TODO: 매칭되면 해당 경로 반환, 없으면 None 반환
                 return SCHEMA_TERMS[term]
         return None
 
     def _step3_llm_based(self, query):
         """LLM에게 질문 분류를 위임한다."""
+        # TODO: 프롬프트를 구성하여 LLM에게 structured/unstructured/hybrid 중 하나를 JSON으로 반환하도록 요청한다
         prompt = f"""다음 질문을 아래 세 가지 유형 중 하나로 분류하세요.
 
 질문: {query}
@@ -135,6 +146,7 @@ class QueryRouter:
                 if hasattr(response, "content")
                 else str(response)
             )
+            # TODO: 응답에서 <think> 태그를 제거하고 JSON을 파싱한다
             # <think> 태그 제거 (DeepSeek-R1 등)
             content = re.sub(r"<think>.*?</think>", "", content, flags=re.DOTALL).strip()
             # JSON 추출
@@ -142,6 +154,7 @@ class QueryRouter:
             if json_match:
                 parsed = json.loads(json_match.group())
                 route = parsed.get("route", "unstructured")
+                # TODO: 유효한 route 값이면 반환, 실패 시 None 반환
                 if route in ("structured", "unstructured", "hybrid"):
                     return route
         except Exception:

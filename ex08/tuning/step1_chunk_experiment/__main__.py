@@ -33,6 +33,7 @@ STEP_DESCRIPTIONS = {
 
 def build_parser() -> argparse.ArgumentParser:
     """argparse 파서를 생성합니다."""
+    # TODO: ArgumentParser를 생성하고 --step, --percentile, --k, --threshold,
     #       --department 인자를 추가하여 반환합니다.
     #       - --step: choices=STEP_CHOICES, required=True
     #       - --percentile: int, default=70
@@ -81,6 +82,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> None:
     """CLI 메인 함수."""
+    # TODO: build_parser()로 파서 생성 → args 파싱
     #       → args.step 값에 따라 dispatch 딕셔너리에서 적절한 실험 함수를 호출합니다.
     #       dispatch 매핑:
     #         "1-1" → run_chunk_size_experiment(percentile=args.percentile)

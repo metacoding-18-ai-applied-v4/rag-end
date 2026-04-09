@@ -16,11 +16,13 @@ docs = [
 
 console.print("문서를 학습(임베딩) 중입니다...")
 try:
+    # TODO: OllamaEmbeddings(nomic-embed-text)로 임베딩 생성 → Chroma.from_documents로 벡터DB 저장
     # 1. 문서를 숫자 벡터로 변환하는 임베딩 모델 로드
     embeddings = OllamaEmbeddings(model="nomic-embed-text")
     # 2. 문서 3개를 벡터로 변환해서 ChromaDB에 저장
     vectorstore = Chroma.from_documents(documents=docs, embedding=embeddings)
 
+    # TODO: vectorstore.as_retriever로 검색기 생성 (search_kwargs={"k": 3})
     # 3. 질문과 가장 비슷한 문서 3개를 가져오는 검색기 생성
     retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
 
@@ -37,6 +39,7 @@ try:
         template=template, input_variables=["context", "question"]
     )
 
+    # TODO: ChatOllama(deepseek-r1:8b) → RetrievalQA.from_chain_type으로 체인 조립
     # 4. LLM 로드
     llm = ChatOllama(model="deepseek-r1:8b", temperature=0)
     # 5. 검색기 + LLM을 체인으로 연결 (검색된 문서를 LLM에 자동 전달)
@@ -51,6 +54,7 @@ try:
     console.print(f"\n질문: {question}")
     console.print("-" * 30)
 
+    # TODO: qa_chain.invoke로 질문 실행 → 검색된 문서(근거) 출력 → AI 답변 출력
     # 6. 질문 실행 — 검색 + LLM 답변이 한 번에 동작
     result = qa_chain.invoke({"query": question})
 

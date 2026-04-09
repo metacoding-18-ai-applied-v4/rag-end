@@ -40,6 +40,7 @@ def split_text_into_chunks(
     if not text:
         return []
 
+    # TODO: chunk_size 단위로 텍스트를 자르되, overlap만큼 겹치게 합니다
     chunks = []                          # 결과를 담을 리스트
     step = chunk_size - overlap          # 다음 청크 시작 위치 (500-100=400자씩 이동)
     start = 0                           # 현재 위치

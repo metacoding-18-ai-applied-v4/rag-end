@@ -36,6 +36,7 @@ RAG_HUMAN_PROMPT = "질문: {question}"
 
 def _format_docs(docs):
     """검색된 Document 목록을 프롬프트에 삽입할 텍스트 형식으로 변환한다."""
+    # TODO: 검색된 Document를 "[문서 N] 출처: ..." 텍스트로 변환
     # 1. 검색된 Document 리스트를 프롬프트에 넣을 텍스트로 변환
     parts = []
     for i, doc in enumerate(docs, start=1):
@@ -47,6 +48,7 @@ def _format_docs(docs):
 
 def build_rag_chain():
     """LCEL 파이프 연산자(|)로 RAG 체인과 Retriever를 조립하여 반환한다."""
+    # TODO: build_llm()으로 LLM 생성 ~ (chain, retriever) 튜플 반환
     # 1. LLM 인스턴스 생성 (llm_factory.py에서 Ollama/OpenAI 선택)
     llm = build_llm()
     # 2. ChromaDB에서 문서를 검색하는 Retriever 생성

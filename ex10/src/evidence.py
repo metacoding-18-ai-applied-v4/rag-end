@@ -21,6 +21,10 @@ def resolve_image_url(image_path: str) -> str:
         웹 서빙용 상대 URL (예: /captured/pdf/doc_page_1.png).
         변환 불가 시 빈 문자열.
     """
+    # TODO: CAPTURED_DIR 경로가 image_path에 포함되면 상대 경로 추출
+    # TODO: /captured/ 접두사를 붙여 웹 URL로 변환
+    # TODO: 이미 /captured/로 시작하면 그대로 반환
+    # TODO: 변환 불가 시 빈 문자열 반환
     captured_str = str(CAPTURED_DIR)
 
     if captured_str in image_path:
@@ -39,10 +43,13 @@ def list_captured_images() -> list[dict]:
     Returns:
         이미지 정보 리스트. 각 항목에 format, filename, size_kb, web_url 포함.
     """
+    # TODO: CAPTURED_DIR 하위 디렉토리를 순회
+    # TODO: 각 서브디렉토리의 PNG 파일에 대해:
     #   - format: 서브디렉토리명 (대문자)
     #   - filename: 파일명
     #   - size_kb: 파일 크기 (KB)
     #   - web_url: resolve_image_url 결과
+    # TODO: images 리스트 반환
     images = []
 
     if not CAPTURED_DIR.exists():
