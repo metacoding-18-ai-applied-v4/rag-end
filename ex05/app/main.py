@@ -22,7 +22,7 @@ load_dotenv()
 PROJECT_ROOT = Path(__file__).parent.parent
 
 app = FastAPI(
-    title="메타코딩 RAG Q&A 엔진",
+    title="커넥트HR RAG Q&A 엔진",
     description="ex05 - LCEL 기반 RAG 체인 + 멀티턴 채팅 UI",
     version="1.0.0",
 )

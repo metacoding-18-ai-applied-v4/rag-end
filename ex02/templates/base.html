@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}메타코딩 사내 시스템{% endblock %}</title>
+    <title>{% block title %}커넥트HR 사내 시스템{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}?v=20260227">
 </head>
 <body>
     <aside class="sidebar">
-        <div class="brand">메타코딩</div>
+        <div class="brand">커넥트HR</div>
         <div class="nav-title">메뉴</div>
         <a class="nav-link {% if active_page == 'dashboard' %}active{% endif %}" href="/admin/dashboard">대시보드</a>
         <a class="nav-link {% if active_page == 'employees' %}active{% endif %}" href="/admin/employees">직원 관리</a>
