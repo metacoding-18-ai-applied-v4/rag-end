@@ -57,7 +57,6 @@ def store_chunks_to_chroma(
 
     chroma_dir = str(Path(chroma_dir).resolve())
 
-    # TODO: 위 4단계를 순서대로 구현합니다
 
     # 1. ko-sroberta 임베딩 모델 로드 (최초 실행 시 ~400MB 다운로드, 이후 캐시)
     model = load_embedding_model(embedding_model_name)
@@ -129,7 +128,6 @@ def search_chroma(
         print("main.py를 먼저 실행하여 문서를 색인하십시오.")
         sys.exit(1)
 
-    # TODO: 쿼리 임베딩 → collection.query() → 결과 정리
 
     # 질문 텍스트를 벡터로 변환 (저장할 때와 같은 모델 사용)
     model = load_embedding_model(embedding_model_name)

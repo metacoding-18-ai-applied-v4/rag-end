@@ -43,8 +43,6 @@ def main() -> None:
     parser.add_argument("--top_k", type=int, default=2, help="검색 결과 수 (기본: 2)")
     args = parser.parse_args()
 
-    # TODO: --step 미지정 시 run_all() 호출
-    # TODO: --step 지정 시 임베딩 로드 후 해당 실험만 실행
     #   1-1: run_parent_doc_experiment
     #   1-2: run_self_query_experiment
     #   1-3: run_compression_experiment

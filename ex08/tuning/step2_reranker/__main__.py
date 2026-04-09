@@ -15,7 +15,6 @@ from .experiments import run_reranker_experiment
 
 def build_parser() -> argparse.ArgumentParser:
     """argparse 파서를 생성합니다."""
-    # TODO: ArgumentParser를 생성하고 --max-queries (int, default=None) 인자를 추가합니다.
     parser = argparse.ArgumentParser(
         description="ex08 step2 — Cross-Encoder ReRanker 실험",
     )
@@ -30,7 +29,6 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> None:
     """CLI 메인 함수."""
-    # TODO: build_parser()로 파서 생성 → args 파싱
     #       → run_reranker_experiment(max_queries=args.max_queries) 호출
     parser = build_parser()
     args = parser.parse_args(argv)

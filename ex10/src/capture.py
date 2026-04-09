@@ -22,13 +22,10 @@ def capture_pdf_pages(pdf_path: Path | str) -> list[dict]:
     Returns:
         페이지별 캡처 결과 리스트. 각 항목에 page, image_path, text, metadata 포함.
     """
-    # TODO: CAPTURED_DIR 디렉토리 생성
-    # TODO: PDF를 fitz로 열어 페이지별 순회:
     #   1) 페이지를 PNG로 렌더링 (dpi=200)
     #   2) CAPTURED_DIR/{stem}_page_{N}.png으로 저장
     #   3) page.get_text()로 텍스트 레이어 추출
     #   4) results에 {page, image_path, text, metadata} 추가
-    # TODO: results 반환
     pdf_path = Path(pdf_path)
     CAPTURED_DIR.mkdir(parents=True, exist_ok=True)
 
