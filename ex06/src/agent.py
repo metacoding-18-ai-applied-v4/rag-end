@@ -46,39 +46,35 @@ class IntegratedAgent:
 
     def _build_agent_executor(self):
         """LangChain AgentExecutor를 생성한다."""
-        try:
-            from langchain.agents import AgentExecutor, create_tool_calling_agent
-            from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+        from langchain.agents import AgentExecutor, create_tool_calling_agent
+        from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
-            # TODO: _build_agent_executor — 프롬프트 + Agent + Executor 조립
+        # TODO: _build_agent_executor — 프롬프트 + Agent + Executor 조립
 
-            # 1. 프롬프트 구성 (system + history + input + scratchpad)
-            prompt = ChatPromptTemplate.from_messages([
-                ("system", SYSTEM_PROMPT),
-                MessagesPlaceholder(variable_name="chat_history", optional=True),
-                ("human", "{input}"),
-                MessagesPlaceholder(variable_name="agent_scratchpad"),
-            ])
+        # 1. 프롬프트 구성 (system + history + input + scratchpad)
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", SYSTEM_PROMPT),
+            MessagesPlaceholder(variable_name="chat_history", optional=True),
+            ("human", "{input}"),
+            MessagesPlaceholder(variable_name="agent_scratchpad"),
+        ])
 
-            # 2. Tool Calling Agent 생성
-            agent = create_tool_calling_agent(
-                llm=self._llm,
-                tools=ALL_TOOLS,
-                prompt=prompt,
-            )
+        # 2. Tool Calling Agent 생성
+        agent = create_tool_calling_agent(
+            llm=self._llm,
+            tools=ALL_TOOLS,
+            prompt=prompt,
+        )
 
-            # 3. AgentExecutor 래핑 (중간 단계 반환 활성화)
-            return AgentExecutor(
-                agent=agent,
-                tools=ALL_TOOLS,
-                verbose=False,
-                return_intermediate_steps=True,
-                max_iterations=10,
-                handle_parsing_errors=True,
-            )
-        except Exception as e:
-            print(f"[경고] AgentExecutor 초기화 실패: {e}. 폴백 모드로 동작합니다.")
-            return None
+        # 3. AgentExecutor 래핑 (중간 단계 반환 활성화)
+        return AgentExecutor(
+            agent=agent,
+            tools=ALL_TOOLS,
+            verbose=False,
+            return_intermediate_steps=True,
+            max_iterations=10,
+            handle_parsing_errors=True,
+        )
 
     def run(self, query):
         """질문을 처리하고 통합 응답을 반환한다."""
@@ -91,30 +87,21 @@ class IntegratedAgent:
         if self._agent_executor is None:
             return fallback_response(self._llm, query, query_type)
 
-        try:
-            result = self._agent_executor.invoke({"input": query})
-            answer = result.get("output", "답변을 생성하지 못했습니다.")
-            steps = result.get("intermediate_steps", [])
+        result = self._agent_executor.invoke({"input": query})
+        answer = result.get("output", "답변을 생성하지 못했습니다.")
+        steps = result.get("intermediate_steps", [])
 
-            # 3. DeepSeek-R1 <think> 태그 제거
-            answer = clean_think_tags(answer)
+        # 3. DeepSeek-R1 <think> 태그 제거
+        answer = clean_think_tags(answer)
 
-            # 4. 중간 단계에서 정형/비정형 데이터 추출
-            structured_data, unstructured_data = parse_agent_result(steps)
+        # 4. 중간 단계에서 정형/비정형 데이터 추출
+        structured_data, unstructured_data = parse_agent_result(steps)
 
-            # 5. 결과 딕셔너리 반환
-            return {
-                "answer": answer,
-                "query_type": query_type,
-                "structured_data": structured_data,
-                "unstructured_data": unstructured_data,
-                "steps": serialize_steps(steps),
-            }
-        except Exception as e:
-            return {
-                "answer": f"처리 중 오류가 발생했습니다: {e}",
-                "query_type": query_type,
-                "structured_data": {},
-                "unstructured_data": [],
-                "steps": [],
-            }
+        # 5. 결과 딕셔너리 반환
+        return {
+            "answer": answer,
+            "query_type": query_type,
+            "structured_data": structured_data,
+            "unstructured_data": unstructured_data,
+            "steps": serialize_steps(steps),
+        }
