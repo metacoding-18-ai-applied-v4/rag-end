@@ -57,7 +57,7 @@ class QueryRouter:
     def classify_query(self, query):
         """질문을 분석하여 처리 경로를 반환한다."""
         # TODO: classify_query — 3단계로 질문 분류 (키워드 → 스키마 → LLM)
-
+        
         # 1. 규칙 기반 키워드 매칭
         step1_result = self._step1_rule_based(query)
         if step1_result is not None:
@@ -80,20 +80,16 @@ class QueryRouter:
     # ------------------------------------------------------------------
     # 3. 내부 구현 메서드
     # ------------------------------------------------------------------
-
+    
     def _step1_rule_based(self, query):
         """규칙 기반 키워드 매칭으로 경로를 결정한다."""
         # TODO: _step1_rule_based — 키워드 매칭으로 경로 결정
-
-        # 1. STRUCTURED/UNSTRUCTURED 키워드 히트 수 계산
+        
         query_lower = query.lower()
 
-        structured_hits = sum(
-            1 for kw in STRUCTURED_KEYWORDS if kw in query_lower
-        )
-        unstructured_hits = sum(
-            1 for kw in UNSTRUCTURED_KEYWORDS if kw in query_lower
-        )
+        # 1. STRUCTURED/UNSTRUCTURED 키워드 히트 수 계산
+        structured_hits = sum(1 for kw in STRUCTURED_KEYWORDS if kw in query_lower)
+        unstructured_hits = sum(1 for kw in UNSTRUCTURED_KEYWORDS if kw in query_lower)
 
         # 2. 양쪽 모두 히트 시 — 한 쪽이 2배 이상 우세하면 그 쪽, 아니면 hybrid
         if structured_hits > 0 and unstructured_hits > 0:
@@ -114,11 +110,12 @@ class QueryRouter:
         """DB 스키마 컬럼명 매칭으로 경로를 결정한다."""
         # TODO: _step2_schema_based — DB 컬럼명 매칭으로 경로 결정
 
-        query_lower = query.lower()
-        for term in SCHEMA_TERMS:
-            if term in query_lower:
-                return SCHEMA_TERMS[term]
-        return None
+        def _step2_schema_based(self, query):
+            query_lower = query.lower()
+            for term in SCHEMA_TERMS:
+                if term in query_lower:
+                    return SCHEMA_TERMS[term]
+            return None
 
     def _step3_llm_based(self, query):
         """LLM에게 질문 분류를 위임한다."""
@@ -135,23 +132,17 @@ class QueryRouter:
 
         반드시 JSON 형식으로만 답하세요:
         {{"route": "structured|unstructured|hybrid", "reason": "한 줄 근거"}}"""
-
-        try:
-            response = self._llm.invoke(prompt)
-            content = (
-                response.content
-                if hasattr(response, "content")
-                else str(response)
-            )
-            # 1. <think> 태그 제거 (DeepSeek-R1 등)
-            content = re.sub(r"<think>.*?</think>", "", content, flags=re.DOTALL).strip()
-            # 2. JSON 추출
-            json_match = re.search(r"\{.*\}", content, re.DOTALL)
-            if json_match:
-                parsed = json.loads(json_match.group())
-                route = parsed.get("route", "unstructured")
-                if route in ("structured", "unstructured", "hybrid"):
-                    return route
-        except Exception:
-            pass
+        # TODO: _step3_llm_based — LLM에게 질문 분류 위임
+        # 1. LLM에 질문 분류 요청
+        response = self._llm.invoke(prompt)
+        content = response.content if hasattr(response, "content") else str(response)
+        # 2. <think> 태그 제거
+        content = re.sub(r"<think>.*?</think>", "", content, flags=re.DOTALL).strip()
+        # 3. JSON 추출 후 route 반환
+        json_match = re.search(r"\{.*\}", content, re.DOTALL)
+        if json_match:
+            parsed = json.loads(json_match.group())
+            route = parsed.get("route", "unstructured")
+            if route in ("structured", "unstructured", "hybrid"):
+                return route
         return None
