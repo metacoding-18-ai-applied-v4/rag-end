@@ -26,7 +26,7 @@ try:
     # 3. 질문과 가장 비슷한 문서 3개를 가져오는 검색기 생성
     retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
 
-    # 4. 프롬프트 템플릿
+    # 프롬프트 템플릿
     template = """당신은 회사의 규정에 대해 설명해주는 AI 비서입니다.
 아래의 참고 정보를 바탕으로 질문에 답하세요. 반드시 한국어로 답변해야 합니다.
 
@@ -42,7 +42,7 @@ try:
     # TODO: ChatOllama(deepseek-r1:8b) → RetrievalQA.from_chain_type으로 체인 조립
     # 4. LLM 로드
     llm = ChatOllama(model="deepseek-r1:8b", temperature=0)
-    # 5. 검색기 + LLM을 체인으로 연결
+    # 5. 검색기 + LLM을 체인으로 연결 (검색된 문서를 LLM에 자동 전달)
     qa_chain = RetrievalQA.from_chain_type(
         llm=llm,
         retriever=retriever,
@@ -55,10 +55,10 @@ try:
     console.print("-" * 30)
 
     # TODO: qa_chain.invoke로 질문 실행 → 검색된 문서(근거) 출력 → AI 답변 출력
-    # 6. 질문 실행
+    # 6. 질문 실행 — 검색 + LLM 답변이 한 번에 동작
     result = qa_chain.invoke({"query": question})
 
-    # 7. 출처 출력
+    # 7. 어떤 문서를 참고했는지 출처 출력
     console.print("\n--- 검색된 문서(근거) ---")
     for doc in result['source_documents']:
         console.print(f"[{doc.metadata['source']}]: {doc.page_content}")
