@@ -16,26 +16,15 @@ Step 1 (Python 파싱) → Step 2 (청킹 + 임베딩 + ChromaDB 저장) → Ste
 """
 
 import sys
-import time
 from pathlib import Path
 
 # src/ 디렉토리를 파이썬 경로에 추가 (모듈 임포트 지원)
 sys.path.insert(0, str(Path(__file__).parent))
 
-from _pipeline_utils import save_results_as_markdown, parse_arguments, _rel_path
-from chunker import chunk_all_documents, DEFAULT_CHUNK_SIZE, DEFAULT_OVERLAP
+from _pipeline_utils import parse_arguments, save_results_as_markdown
+from chunker import DEFAULT_CHUNK_SIZE, DEFAULT_OVERLAP, chunk_all_documents
 from extractor import extract_all_from_directory
-from store import (
-    DEFAULT_CHROMA_DIR,
-    DEFAULT_COLLECTION_NAME,
-    DEFAULT_EMBEDDING_MODEL,
-    store_chunks_to_chroma,
-)
-
-# 기본 경로 설정
-BASE_DIR = Path(__file__).parent.parent
-DEFAULT_DOCS_DIR = str(BASE_DIR / "data" / "docs")
-DEFAULT_MARKDOWN_DIR = str(BASE_DIR / "data" / "markdown")
+from store import store_chunks_to_chroma
 
 
 def step1_python_parsing(docs_dir: str) -> list[dict]:
