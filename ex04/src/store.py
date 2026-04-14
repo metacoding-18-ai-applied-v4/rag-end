@@ -131,11 +131,11 @@ def search_chroma(
 
     # TODO: 쿼리 임베딩 → collection.query() → 결과 정리
 
-    # 질문 텍스트를 벡터로 변환 (저장할 때와 같은 모델 사용)
+    # 1. 질문 텍스트를 벡터로 변환 (저장할 때와 같은 모델 사용)
     model = load_embedding_model(embedding_model_name)
     query_embedding = model.encode([query], normalize_embeddings=True).tolist()
 
-    # 저장된 ChromaDB를 열고 컬렉션 가져오기
+    # 2. 저장된 ChromaDB를 열고 컬렉션 가져오기
     client = chromadb.PersistentClient(
         path=str(chroma_dir_path.resolve()),
         settings=Settings(anonymized_telemetry=False),
