@@ -30,15 +30,6 @@ class ChatRequest(BaseModel):
     use_agent: bool = Field(default=True, description="통합 에이전트 사용 여부")
 
 
-# route 값 → 프론트엔드 query_type 역매핑
-_ROUTE_TO_TYPE = {
-    "db": "structured",
-    "rag": "unstructured",
-    "agent": "hybrid",
-    "agent_fallback": "hybrid",
-}
-
-
 class ChatResponse(BaseModel):
     """채팅 응답 모델."""
 
@@ -128,7 +119,7 @@ async def chat_endpoint(body: ChatRequest):
             return ChatResponse(
                 query=body.query,
                 answer=result.get("output", "답변을 생성하지 못했습니다."),
-                query_type=_ROUTE_TO_TYPE.get(result.get("route", ""), "unstructured"),
+                query_type=result.get("query_type", "unstructured"),
                 mode="agent",
                 structured_data=structured_data,
                 unstructured_data=unstructured_data,

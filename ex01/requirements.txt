@@ -1,6 +1,11 @@
-langchain>=0.3.0
-langchain-community>=0.3.0
-langchain-ollama>=0.2.0
-langchain-chroma>=0.2.0
-langchain-classic>=0.1.0
+# ex01 환각과 RAG의 첫 만남 — LangChain 맛보기
+# 버전은 전체 챕터(ex01~ex11)가 동일합니다.
+
+langchain==0.3.21
+langchain-core==0.3.76
+langchain-community==0.3.20
+langchain-ollama==0.2.3
+langchain-chroma==0.2.6
+langchain-classic==0.1.0
 chromadb==1.5.1
+rich==13.9.4

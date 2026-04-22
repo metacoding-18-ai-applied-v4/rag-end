@@ -1,7 +1,7 @@
 """샘플 문서 및 모델 상수."""
 
 # Cross-Encoder 모델
-CROSS_ENCODER_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+CROSS_ENCODER_MODEL = "BAAI/bge-reranker-v2-m3"
 
 # 인메모리 샘플 문서 (초기 벡터 검색 시뮬레이션용)
 SAMPLE_DOCUMENTS = [

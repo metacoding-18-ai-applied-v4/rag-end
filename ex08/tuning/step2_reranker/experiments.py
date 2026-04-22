@@ -83,11 +83,17 @@ def calculate_rank_change(before: list[dict], after: list[dict]) -> list[dict]:
 
 
 # ── 메인 실험 ────────────────────────────────────────────────────
-def run_reranker_experiment(max_queries: int | None = None) -> None:
+def run_reranker_experiment(
+    max_queries: int | None = None,
+    fetch_k: int = 10,
+    top_k: int = 5,
+) -> None:
     """리랭커 실험 전체를 실행합니다.
 
     Args:
         max_queries: 실행할 최대 쿼리 수 (None이면 전체).
+        fetch_k: 초기 검색에서 가져올 문서 수.
+        top_k: 리랭킹 후 최종 반환 문서 수.
     """
     # TODO: create_reranker()로 리랭커를 생성합니다.
     #       test_queries = ["연차 신청 절차는 어떻게 됩니까", "재택근무 신청 조건", "출장비 정산 기한"]
@@ -112,11 +118,11 @@ def run_reranker_experiment(max_queries: int | None = None) -> None:
     for query in test_queries:
         console.print(f"\n[bold cyan]쿼리:[/bold cyan] {query}")
 
-        initial_results = simulate_initial_retrieval(query, SAMPLE_DOCUMENTS, top_k=10)
-        console.print(f"  초기 검색 결과: {len(initial_results)}개")
+        initial_results = simulate_initial_retrieval(query, SAMPLE_DOCUMENTS, top_k=fetch_k)
+        console.print(f"  초기 검색 결과: {len(initial_results)}개 (fetch_k={fetch_k})")
 
         start_time = time.time()
-        reranked_results = reranker.rerank(query, initial_results, top_k=5)
+        reranked_results = reranker.rerank(query, initial_results, top_k=top_k)
         elapsed = time.time() - start_time
         console.print(f"  리랭킹 완료: {len(reranked_results)}개 ({elapsed:.3f}s)")
 

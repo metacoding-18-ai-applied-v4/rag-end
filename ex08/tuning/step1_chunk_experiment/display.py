@@ -3,7 +3,7 @@
 from rich.console import Console
 from rich.table import Table
 
-console = Console()
+console = Console(force_terminal=True, width=100)
 
 
 def print_experiment_table(title: str, results: list[dict]) -> None:

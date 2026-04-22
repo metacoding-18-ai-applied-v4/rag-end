@@ -50,7 +50,7 @@ def run_alpha_experiment(
 
 
 # ── 메인 실험 ────────────────────────────────────────────────────
-def run_hybrid_search_experiment(*, max_queries: int | None = None) -> None:
+def run_hybrid_search_experiment(*, max_queries: int | None = None, alpha: float = 0.5) -> None:
     """하이브리드 검색 전체 실험을 실행합니다."""
     # TODO: BM25Retriever와 VectorRetriever를 SAMPLE_DOCUMENTS, SAMPLE_METADATAS로 초기화합니다.
     #       1. run_alpha_experiment()로 alpha 파라미터 실험 → Rich Table로 출력
@@ -88,12 +88,12 @@ def run_hybrid_search_experiment(*, max_queries: int | None = None) -> None:
     console.print(table)
 
     console.print(
-        "\n[bold yellow]2. 하이브리드 검색 데모 (alpha=0.5)[/bold yellow]"
+        f"\n[bold yellow]2. 하이브리드 검색 데모 (alpha={alpha})[/bold yellow]"
     )
     demo_query = "연차 신청 절차와 승인 방법"
-    console.print(f"  쿼리: '{demo_query}'")
+    console.print(f"  쿼리: '{demo_query}'  (alpha={alpha})")
 
-    ensemble = EnsembleRetriever(bm25_retriever, vector_retriever, alpha=0.5)
+    ensemble = EnsembleRetriever(bm25_retriever, vector_retriever, alpha=alpha)
     print_hybrid_demo(ensemble, demo_query)
 
     console.print(

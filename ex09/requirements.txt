@@ -1,0 +1,19 @@
+# ex09 질문을 제대로 이해 못한다 — 질의 재작성·결과 가공 실험
+# 버전은 전체 챕터(ex01~ex11)가 동일합니다.
+
+# --- LangChain (HuggingFaceEmbeddings 등) ---
+langchain==0.3.21
+langchain-core==0.3.76
+langchain-community==0.3.20
+langchain-huggingface==0.1.2
+
+# --- 임베딩 ---
+sentence-transformers==3.3.1
+huggingface-hub==0.30.2
+
+# --- HyDE·Multi-Query에서 LLM 호출 ---
+httpx==0.28.1
+
+# --- 공통 ---
+python-dotenv==1.0.1
+rich==13.9.4

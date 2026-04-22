@@ -10,7 +10,7 @@ from rich.table import Table
 if TYPE_CHECKING:
     from .retrievers import EnsembleRetriever
 
-console = Console()
+console = Console(force_terminal=True, width=100)
 
 
 def print_hybrid_demo(ensemble: EnsembleRetriever, query: str) -> None:

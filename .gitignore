@@ -7,3 +7,10 @@ __pycache__/
 chroma_db/
 *.db
 .DS_Store
+
+# 런타임 생성 캐시
+parent_docs.json
+vision_cache/
+static/evidence/
+outputs/
+

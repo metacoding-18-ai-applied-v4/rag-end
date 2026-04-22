@@ -20,16 +20,16 @@ from ._main_utils import find_pdf
 console = Console()
 
 
-def run_step_1_1(pdf_path: Path) -> dict | None:
+def run_step_1_1(pdf_path: Path, dpi: int = 150) -> dict | None:
     """Step 1-1: OCR 파싱."""
     from .display import show_parse_result
     from .parser import parse_pdf_ocr
 
     console.print("[bold]Step 1-1: OCR 파싱 (EasyOCR)[/bold]")
-    console.print(f"  대상: {pdf_path.name}")
+    console.print(f"  대상: {pdf_path.name}  |  DPI: {dpi}")
 
     start = time.time()
-    result = parse_pdf_ocr(pdf_path)
+    result = parse_pdf_ocr(pdf_path, dpi=dpi)
     elapsed = time.time() - start
 
     console.print(f"  소요 시간: {elapsed:.2f}초")
@@ -37,16 +37,16 @@ def run_step_1_1(pdf_path: Path) -> dict | None:
     return result
 
 
-def run_step_1_2(pdf_path: Path) -> dict | None:
+def run_step_1_2(pdf_path: Path, dpi: int = 150) -> dict | None:
     """Step 1-2: Vision LLM 파싱."""
     from .display import show_parse_result
     from .parser import parse_pdf_vllm
 
     console.print("[bold]Step 1-2: Vision LLM 파싱[/bold]")
-    console.print(f"  대상: {pdf_path.name}")
+    console.print(f"  대상: {pdf_path.name}  |  DPI: {dpi}")
 
     start = time.time()
-    result = parse_pdf_vllm(pdf_path)
+    result = parse_pdf_vllm(pdf_path, dpi=dpi)
     elapsed = time.time() - start
 
     console.print(f"  소요 시간: {elapsed:.2f}초")
@@ -80,10 +80,10 @@ def main() -> None:
     vllm_result = None
 
     if args.step in ("1-1", "all"):
-        ocr_result = run_step_1_1(pdf_path)
+        ocr_result = run_step_1_1(pdf_path, dpi=args.dpi)
 
     if args.step in ("1-2", "all"):
-        vllm_result = run_step_1_2(pdf_path)
+        vllm_result = run_step_1_2(pdf_path, dpi=args.dpi)
 
     if args.step == "all" and ocr_result and vllm_result:
         from .display import show_comparison

@@ -11,9 +11,9 @@ llm = ChatOllama(model="deepseek-r1:8b", temperature=0)
 question = "우리 회사(커넥트)의 신입사원 연차 발생 규정이 어떻게 돼?"
 
 # TODO: 질문 출력 → llm.invoke로 답변 받기 → 답변 출력
-# 1. 질문을 터미널에 출력
+# 2. 질문을 터미널에 출력
 console.print(f"[bold]질문:[/bold] {question}\n")
-# 2. LLM에 질문을 보내고 답변을 받음
+# 3. LLM에 질문을 보내고 답변을 받음
 response = llm.invoke(question)
-# 3. 답변을 출력
+# 4. 답변을 출력
 console.print(f"[bold]답변:[/bold]\n{response.content}")

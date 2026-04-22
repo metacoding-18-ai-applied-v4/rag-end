@@ -68,10 +68,10 @@ OpenAI 사용 시 `.env`에서 `LLM_PROVIDER=openai`로 변경하고
 ### 4단계: 서버 실행
 
 ```bash
-uvicorn app.main:app --reload --port 8008
+uvicorn app.main:app --reload --port 8000
 ```
 
-브라우저에서 `http://localhost:8008/chat` 접속
+브라우저에서 `http://localhost:8000/chat` 접속
 
 ---
 

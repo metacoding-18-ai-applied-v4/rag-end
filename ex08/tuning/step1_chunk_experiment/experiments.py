@@ -19,7 +19,7 @@ from .display import print_experiment_table
 from .retriever import InMemoryRetriever, run_k_value_experiment, run_metadata_filter_experiment, run_threshold_experiment
 from .strategies import fixed_size_chunking, recursive_character_chunking, semantic_chunking
 
-console = Console()
+console = Console(force_terminal=True, width=100)
 
 
 # ── step 1-1: 청크 크기 실험 ─────────────────────────────────────
@@ -31,33 +31,34 @@ def run_chunk_size_experiment(percentile: int = 70) -> None:
     #       - analyze_chunks()로 통계 계산
     #       - results 리스트에 {전략, 청크 수, 평균 크기, 최소 크기, 최대 크기, 실행 시간} 딕셔너리 추가
     #       - print_experiment_table("청크 크기별 비교", results) 출력
-    console.print("[bold]step 1-1: 청크 크기 실험[/bold]")
+    console.print("[bold]step 1-1: 청크 크기 × 오버랩 조합 실험[/bold]")
 
     text = SAMPLE_DOCUMENT
     console.print(f"[green]샘플 문서 로드:[/green] {len(text)}자")
 
     results = []
     chunk_sizes = [300, 500, 1000]
+    overlap_ratios = [0.1, 0.2, 0.3]
 
     for size in chunk_sizes:
-        overlap = size // 10
-        start = time.time()
-        chunks = fixed_size_chunking(text, chunk_size=size, overlap=overlap)
-        elapsed = time.time() - start
+        for ratio in overlap_ratios:
+            overlap = int(size * ratio)
+            start = time.time()
+            chunks = fixed_size_chunking(text, chunk_size=size, overlap=overlap)
+            elapsed = time.time() - start
 
-        stats = analyze_chunks(chunks)
-        results.append(
-            {
-                "전략": f"Fixed-size ({size}자)",
-                "청크 수": stats["count"],
-                "평균 크기": f"{stats['avg_size']:.0f}자",
-                "최소 크기": f"{stats['min_size']}자",
-                "최대 크기": f"{stats['max_size']}자",
-                "실행 시간": f"{elapsed:.3f}s",
-            }
-        )
+            stats = analyze_chunks(chunks)
+            results.append(
+                {
+                    "크기": f"{size}자",
+                    "오버랩": f"{int(ratio*100)}% ({overlap}자)",
+                    "청크 수": stats["count"],
+                    "평균 크기": f"{stats['avg_size']:.0f}자",
+                    "실행 시간": f"{elapsed:.3f}s",
+                }
+            )
 
-    print_experiment_table("청크 크기별 비교", results)
+    print_experiment_table("청크 크기 × 오버랩 조합 비교", results)
 
 
 # ── step 1-2: 오버랩 비율 실험 ───────────────────────────────────

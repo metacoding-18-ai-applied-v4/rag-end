@@ -20,7 +20,7 @@ from .experiments import (
 )
 
 
-STEP_CHOICES = ["1-1", "1-2", "1-3", "1-4", "1-5"]
+STEP_CHOICES = ["1-1", "1-2", "1-3", "1-4"]
 
 STEP_DESCRIPTIONS = {
     "1-1": "청크 크기 실험 (300/500/1000자)",
@@ -86,19 +86,17 @@ def main(argv: list[str] | None = None) -> None:
     #       → args.step 값에 따라 dispatch 딕셔너리에서 적절한 실험 함수를 호출합니다.
     #       dispatch 매핑:
     #         "1-1" → run_chunk_size_experiment(percentile=args.percentile)
-    #         "1-2" → run_overlap_experiment()
-    #         "1-3" → run_strategy_comparison(percentile=args.percentile)
-    #         "1-4" → run_short_doc_experiment(percentile=args.percentile)
-    #         "1-5" → run_retriever_experiment(k, threshold, department)
+    #         "1-2" → run_strategy_comparison(percentile=args.percentile)
+    #         "1-3" → run_short_doc_experiment(percentile=args.percentile)
+    #         "1-4" → run_retriever_experiment(k, threshold, department)
     parser = build_parser()
     args = parser.parse_args(argv)
 
     dispatch = {
         "1-1": lambda: run_chunk_size_experiment(percentile=args.percentile),
-        "1-2": lambda: run_overlap_experiment(),
-        "1-3": lambda: run_strategy_comparison(percentile=args.percentile),
-        "1-4": lambda: run_short_doc_experiment(percentile=args.percentile),
-        "1-5": lambda: run_retriever_experiment(
+        "1-2": lambda: run_strategy_comparison(percentile=args.percentile),
+        "1-3": lambda: run_short_doc_experiment(percentile=args.percentile),
+        "1-4": lambda: run_retriever_experiment(
             k=args.k, threshold=args.threshold, department=args.department
         ),
     }

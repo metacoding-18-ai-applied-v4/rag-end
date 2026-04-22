@@ -7,7 +7,7 @@ from pathlib import Path
 
 from rich.console import Console
 
-console = Console()
+console = Console(force_terminal=True, width=100)
 
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "jhgan/ko-sroberta-multitask")
 USE_SAMPLE_DATA = os.getenv("USE_SAMPLE_DATA", "true").lower() == "true"

@@ -114,3 +114,43 @@ def show_comparison(results: list[dict]) -> None:
         )
 
     console.print(table)
+
+
+def show_strategy_comparison(results: dict) -> None:
+    """A/B/C/D 조합별 비교 결과를 한 표로 출력한다.
+
+    results: {"A": {...}, "B": {...}, ...}  (run_all_strategies 반환값)
+    """
+    if not results:
+        return
+
+    table = Table(title="튜닝 조합별 평가 비교", show_lines=True)
+    table.add_column("조합", style="cyan", justify="center", width=14)
+    table.add_column("구성", style="white", width=36)
+    table.add_column("Precision@K", style="green", justify="right", width=12)
+    table.add_column("Recall@K", style="green", justify="right", width=10)
+    table.add_column("환각률", style="red", justify="right", width=8)
+    table.add_column("Latency(ms)", style="yellow", justify="right", width=12)
+
+    for name, r in results.items():
+        if "error" in r:
+            table.add_row(
+                r.get("strategy_label", name),
+                "(에러)",
+                "-",
+                "-",
+                "-",
+                "-",
+            )
+            continue
+        s = r.get("summary", {})
+        table.add_row(
+            r.get("strategy_label", name),
+            r.get("strategy_description", ""),
+            f"{s.get('avg_precision_at_k', 0):.3f}",
+            f"{s.get('avg_recall_at_k', 0):.3f}",
+            f"{s.get('hallucination_rate', 0):.3f}",
+            f"{s.get('latency_ms_per_query', 0):.1f}",
+        )
+
+    console.print(table)

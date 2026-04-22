@@ -1,63 +1,28 @@
 """step2 — 하이브리드 파싱 전략 구현.
 
-OCR 텍스트 길이가 임계값 미만이면 Vision LLM으로 전환한다.
-텍스트 레이어 우선 전략도 제공한다.
+pypdf(fitz)가 의미 있는 양의 텍스트를 돌려주면 그대로 사용하고,
+부족하면 Vision LLM으로 전환한다.
 """
-
-import os
 
 import fitz  # PyMuPDF
 
-from ._hybrid_utils import ocr_page, vision_page
+from ._hybrid_utils import vision_page
 
-MIN_TEXT_LENGTH = int(os.getenv("MIN_TEXT_LENGTH", "50"))
-
-
-# ---------------------------------------------------------------------------
-# 하이브리드 전략 1: OCR → Vision LLM fallback
-# ---------------------------------------------------------------------------
-
-def process_image_hybrid(
-    page: fitz.Page,
-    dpi: int = 150,
-    threshold: int | None = None,
-    vision_model: str | None = None,
-) -> dict:
-    """OCR 텍스트가 임계값 이상이면 OCR 결과를, 아니면 Vision LLM으로 전환한다."""
-    threshold = threshold or MIN_TEXT_LENGTH
-
-    ocr_text = ocr_page(page, dpi=dpi)
-    ocr_len = len(ocr_text.strip())
-
-    if ocr_len >= threshold:
-        return {"strategy": "ocr", "text": ocr_text, "char_count": ocr_len}
-
-    vision_text = vision_page(page, dpi=dpi, model=vision_model)
-    return {
-        "strategy": "vision",
-        "text": vision_text or ocr_text,
-        "char_count": len(vision_text) if vision_text else ocr_len,
-    }
+# pypdf 텍스트 임계값.
+# - 이 미만이면 스캔본이거나 축 레이블만 있는 차트 페이지로 간주하고 Vision으로 전환.
+# - 일반 텍스트 페이지는 보통 수백~수천 자가 나오므로 50자 기준은 여유 있게 안전하다.
+MIN_TEXT_LENGTH = 50
 
 
-# ---------------------------------------------------------------------------
-# 하이브리드 전략 2: 텍스트 레이어 → Vision LLM fallback
-# ---------------------------------------------------------------------------
-
-def process_image_textlayer(
+def process_page_hybrid(
     page: fitz.Page,
     dpi: int = 150,
     vision_model: str | None = None,
 ) -> dict:
-    """PDF 텍스트 레이어가 있으면 사용, 없으면 Vision LLM으로 전환한다."""
-    text_layer = page.get_text().strip()
-
-    if text_layer:
-        return {
-            "strategy": "text_layer",
-            "text": text_layer,
-            "char_count": len(text_layer),
-        }
+    """pypdf 텍스트가 충분하면 text_layer, 부족하면 Vision LLM."""
+    text = page.get_text().strip()
+    if len(text) >= MIN_TEXT_LENGTH:
+        return {"strategy": "text_layer", "text": text, "char_count": len(text)}
 
     vision_text = vision_page(page, dpi=dpi, model=vision_model)
     return {

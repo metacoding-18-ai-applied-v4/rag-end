@@ -1,7 +1,12 @@
 """step3 — 평가 실행 로직.
 
-벡터DB를 구축하고, 테스트 질문으로 검색을 수행한 뒤, 평가 지표를 계산한다.
+strategies.STRATEGIES에서 꺼낸 조합으로 벡터DB를 빌드하고,
+테스트 질문을 돌린 뒤 지표를 계산한다.
 """
+
+from __future__ import annotations
+
+import time
 
 from .metrics import (
     calculate_mrr,
@@ -11,45 +16,63 @@ from .metrics import (
 )
 from ._eval_utils import (
     build_vectordb,
-    search_collection,
     generate_answer,
     load_test_questions,
 )
+from .strategies import STRATEGY_ORDER, Strategy, get_strategy
 
 
-def run_evaluation(k: int = 3, generate_answers: bool = False) -> dict:
-    """전체 평가 파이프라인을 실행한다.
+def run_evaluation(
+    k: int = 3,
+    strategy_name: str = "D",
+    generate_answers: bool = False,
+) -> dict:
+    """한 조합으로 전체 평가 파이프라인을 실행한다.
 
-    1. 벡터DB 구축
-    2. 테스트 질문 로드
-    3. 각 질문에 대해 검색 수행
-    4. 평가 지표 계산
+    1. strategy 조회
+    2. 해당 parser/chunker로 벡터DB 구축
+    3. 각 질문마다 query_transform → retrieve → rerank
+    4. Precision@k · Recall@k · MRR · Hallucination · Latency 계산
     """
+    strategy = get_strategy(strategy_name)
+
     # 1) 벡터DB 구축
-    collection = build_vectordb()
+    collection = build_vectordb(strategy.parse_fn, strategy.chunk_fn)
     doc_count = collection.count()
 
     # 2) 테스트 질문 로드
     questions = load_test_questions()
     if not questions:
-        return {"error": "test_questions.json이 없거나 비어 있습니다."}
+        return {
+            "strategy": strategy_name,
+            "error": "test_questions.json이 없거나 비어 있습니다.",
+        }
 
-    # 3) 검색 + 평가
-    all_retrieved_sources = []
-    all_relevant_sources = []
-    all_answers = []
-    all_contexts = []
-    question_results = []
+    all_retrieved_sources: list[list[str]] = []
+    all_relevant_sources: list[list[str]] = []
+    all_answers: list[str] = []
+    all_contexts: list[list[str]] = []
+    question_results: list[dict] = []
+
+    total_start = time.time()
 
     for q in questions:
-        query = q["query"]
+        query_raw = q["query"]
         relevant = q.get("relevant_sources", [])
 
-        search_result = search_collection(collection, query, k=k)
-        retrieved_sources = search_result["sources"]
+        # 3a) query transform
+        query = strategy.query_transform_fn(query_raw)
 
-        # 답변 생성 (옵션)
-        context_docs = [r["text"] for r in search_result["retrieved"]]
+        # 3b) 검색 (리랭크를 쓸 경우 넉넉히 뽑아 후처리)
+        fetch_k = k * 3 if strategy.uses_rerank else k
+        retrieved = strategy.retrieve_fn(collection, query, fetch_k)
+
+        # 3c) 리랭크 + top-k 컷
+        retrieved = strategy.rerank_fn(query, retrieved)[:k]
+        retrieved_sources = [r["source"] for r in retrieved]
+
+        # 답변 수집 (generate_answers=False면 expected_answer를 답변으로 간주)
+        context_docs = [r["text"] for r in retrieved]
         if generate_answers:
             answer = generate_answer(query, context_docs)
         else:
@@ -65,7 +88,8 @@ def run_evaluation(k: int = 3, generate_answers: bool = False) -> dict:
 
         question_results.append({
             "id": q.get("id", 0),
-            "query": query,
+            "query": query_raw,
+            "query_transformed": query,
             "category": q.get("category", ""),
             "relevant_sources": relevant,
             "retrieved_sources": retrieved_sources,
@@ -74,6 +98,9 @@ def run_evaluation(k: int = 3, generate_answers: bool = False) -> dict:
             "answer": answer[:200],
         })
 
+    total_elapsed = time.time() - total_start
+    latency_per_query_ms = (total_elapsed / max(len(questions), 1)) * 1000
+
     # 4) 전체 지표 집계
     avg_precision = sum(r["precision_at_k"] for r in question_results) / len(question_results)
     avg_recall = sum(r["recall_at_k"] for r in question_results) / len(question_results)
@@ -81,7 +108,7 @@ def run_evaluation(k: int = 3, generate_answers: bool = False) -> dict:
     hallucination = estimate_hallucination_rate(all_answers, all_contexts)
 
     # 카테고리별 집계
-    category_stats = {}
+    category_stats: dict[str, dict] = {}
     for r in question_results:
         cat = r["category"] or "기타"
         if cat not in category_stats:
@@ -97,6 +124,9 @@ def run_evaluation(k: int = 3, generate_answers: bool = False) -> dict:
         del stats["recall"]
 
     return {
+        "strategy": strategy_name,
+        "strategy_label": strategy.name,
+        "strategy_description": strategy.description,
         "summary": {
             "total_questions": len(questions),
             "k": k,
@@ -105,7 +135,17 @@ def run_evaluation(k: int = 3, generate_answers: bool = False) -> dict:
             "avg_recall_at_k": round(avg_recall, 3),
             "mrr": round(mrr, 3),
             "hallucination_rate": round(hallucination, 3),
+            "latency_ms_per_query": round(latency_per_query_ms, 1),
+            "total_seconds": round(total_elapsed, 2),
         },
         "category_stats": category_stats,
         "question_results": question_results,
     }
+
+
+def run_all_strategies(k: int = 3, generate_answers: bool = False) -> dict[str, dict]:
+    """A/B/C/D 네 조합을 차례로 돌려 묶어 돌려준다."""
+    results: dict[str, dict] = {}
+    for name in STRATEGY_ORDER:
+        results[name] = run_evaluation(k=k, strategy_name=name, generate_answers=generate_answers)
+    return results

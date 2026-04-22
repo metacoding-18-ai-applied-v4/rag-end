@@ -25,8 +25,14 @@ def main(argv: list[str] | None = None) -> None:
         default=None,
         help="실험에 사용할 최대 쿼리 수 (기본값: 전체)",
     )
+    parser.add_argument(
+        "--alpha",
+        type=float,
+        default=0.5,
+        help="Vector 가중치 (0.0=BM25만, 1.0=Vector만, 기본값: 0.5)",
+    )
     args = parser.parse_args(argv)
-    run_hybrid_search_experiment(max_queries=args.max_queries)
+    run_hybrid_search_experiment(max_queries=args.max_queries, alpha=args.alpha)
 
 
 if __name__ == "__main__":

@@ -60,7 +60,7 @@ def build_rag_chain():
         ("human", RAG_HUMAN_PROMPT),
     ])
 
-    # 4. LCEL 파이프로 체인 조립 — 질문→검색→포맷→프롬프트→LLM→텍스트 추출
+    # 4. LCEL 파이프로 체인 조립. 질문→검색→포맷→프롬프트→LLM→텍스트
     chain = (
         {
             "context": itemgetter("question") | retriever | _format_docs,

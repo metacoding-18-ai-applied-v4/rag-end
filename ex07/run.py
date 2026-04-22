@@ -2,8 +2,10 @@ import logging
 import os
 import uvicorn
 
+from src._rich_logging import setup_rich_logging
+
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
-logging.basicConfig(level=logging.INFO, format="%(levelname)s:%(name)s: %(message)s")
+setup_rich_logging(level=logging.INFO)
 
 if __name__ == "__main__":
     from src.tools.search_documents import _get_vectorstore

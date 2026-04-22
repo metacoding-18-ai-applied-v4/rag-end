@@ -77,8 +77,8 @@ def step2_embed_and_store(
     Returns:
         store_chunks_to_chroma() 반환값 딕셔너리
     """
-    # TODO: chunk_all_documents()로 청킹 → store_chunks_to_chroma()로 ChromaDB 저장
-    # 1. 파싱 결과를 500자+100자 오버랩으로 청킹
+    # TODO: chunk_all_documents()로 청킹 → store_chunks_to_chroma()로 저장
+    # 1. 파싱 결과를 500자 + 100자 오버랩으로 청킹
     all_chunks = chunk_all_documents(python_results, chunk_size, overlap)
     # 2. 청크를 임베딩하여 ChromaDB에 저장
     store_result = store_chunks_to_chroma(

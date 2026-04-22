@@ -1,26 +1,31 @@
 """step3 — CLI 보조 함수 (완성 코드).
 
-step별 실행 함수 중 보조 로직을 제공한다.
+단일 지표 흐름(Hallucination, MRR, K 비교)은 기본 조합 D를 사용한다.
+조합별 비교는 __main__.py의 --strategy all 플래그로 실행한다.
 """
+
+from __future__ import annotations
 
 from rich.console import Console
 
 console = Console()
 
+DEFAULT_STRATEGY = "D"
+
 
 def run_step_2_2(k: int) -> dict | None:
-    """Step 2-2: Hallucination Rate 평가."""
-    from .display import show_summary
+    """Step 2-2: Hallucination Rate 평가 (기본 조합 D)."""
     from .evaluator import run_evaluation
 
     console.print("[bold]Step 2-2: Hallucination Rate[/bold]")
 
-    result = run_evaluation(k=k)
+    result = run_evaluation(k=k, strategy_name=DEFAULT_STRATEGY)
     if "error" in result:
         console.print(f"[red]{result['error']}[/red]")
         return None
 
     rate = result["summary"]["hallucination_rate"]
+    console.print(f"  조합: {result['strategy_label']}")
     console.print(f"  Hallucination Rate: {rate:.3f} ({rate * 100:.1f}%)")
 
     if rate < 0.1:
@@ -34,18 +39,18 @@ def run_step_2_2(k: int) -> dict | None:
 
 
 def run_step_2_3(k: int) -> dict | None:
-    """Step 2-3: MRR 평가."""
-    from .display import show_summary
+    """Step 2-3: MRR 평가 (기본 조합 D)."""
     from .evaluator import run_evaluation
 
     console.print("[bold]Step 2-3: Mean Reciprocal Rank (MRR)[/bold]")
 
-    result = run_evaluation(k=k)
+    result = run_evaluation(k=k, strategy_name=DEFAULT_STRATEGY)
     if "error" in result:
         console.print(f"[red]{result['error']}[/red]")
         return None
 
     mrr = result["summary"]["mrr"]
+    console.print(f"  조합: {result['strategy_label']}")
     console.print(f"  MRR: {mrr:.3f}")
 
     if mrr > 0.8:
@@ -59,16 +64,16 @@ def run_step_2_3(k: int) -> dict | None:
 
 
 def run_compare() -> None:
-    """K 값별 성능 비교."""
+    """K 값별 성능 비교 (기본 조합 D)."""
     from .display import show_comparison
     from .evaluator import run_evaluation
 
-    console.print("[bold]K 값별 성능 비교[/bold]")
+    console.print("[bold]K 값별 성능 비교 (조합 D)[/bold]")
 
     results = []
     for k_val in [1, 3, 5, 10]:
         console.print(f"  K={k_val} 평가 중...")
-        result = run_evaluation(k=k_val)
+        result = run_evaluation(k=k_val, strategy_name=DEFAULT_STRATEGY)
         if "error" not in result:
             results.append(result)
 

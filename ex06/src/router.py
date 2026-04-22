@@ -110,12 +110,11 @@ class QueryRouter:
         """DB 스키마 컬럼명 매칭으로 경로를 결정한다."""
         # TODO: _step2_schema_based — DB 컬럼명 매칭으로 경로 결정
 
-        def _step2_schema_based(self, query):
-            query_lower = query.lower()
-            for term in SCHEMA_TERMS:
-                if term in query_lower:
-                    return SCHEMA_TERMS[term]
-            return None
+        query_lower = query.lower()
+        for term in SCHEMA_TERMS:
+            if term in query_lower:
+                return SCHEMA_TERMS[term]
+        return None
 
     def _step3_llm_based(self, query):
         """LLM에게 질문 분류를 위임한다."""

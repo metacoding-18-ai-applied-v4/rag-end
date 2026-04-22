@@ -2,7 +2,7 @@
 
 from rich.console import Console
 
-console = Console()
+console = Console(force_terminal=True, width=100)
 
 
 def fixed_size_chunking(text: str, chunk_size: int = 500, overlap: int = 100) -> list[str]:
